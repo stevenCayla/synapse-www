@@ -4,7 +4,7 @@ import externalizeInlineScripts from './integrations/externalize-inline-scripts.
 
 // Synapse Medical website — single "coming soon" page for now.
 export default defineConfig({
-  site: 'https://www.synapse-medical.fr',
+  site: 'https://synapse-medical.fr',
   vite: {
     // No data: URIs for the fonts: the CSP only allows font-src 'self'.
     build: { assetsInlineLimit: 0 },

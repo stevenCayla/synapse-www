@@ -16,7 +16,7 @@ jobs:
       branch: ${{ steps.target.outputs.branch }}
       deploy: ${{ steps.target.outputs.deploy }}
     steps:
-      # develop (push or manual run) → dev-www. main → www, but ONLY through
+      # develop (push or manual run) → dev-www. main → synapse-medical.fr, but ONLY through
       # a manual run: the plan has no "required reviewers" environment rule, so
       # running the workflow by hand on main is the approval gate. A push to
       # main, other branches and pull requests are only built.
@@ -72,7 +72,7 @@ jobs:
     # production is reached only by a manual run on main (see the target job).
     environment:
       name: ${{ needs.target.outputs.branch == 'main' && 'production' || 'development' }}
-      url: ${{ needs.target.outputs.branch == 'main' && 'https://www.synapse-medical.fr' || 'https://dev-www.synapse-medical.fr' }}
+      url: ${{ needs.target.outputs.branch == 'main' && 'https://synapse-medical.fr' || 'https://dev-www.synapse-medical.fr' }}
     concurrency:
       group: deploy-${{ needs.target.outputs.branch }}
       cancel-in-progress: false
