@@ -3,7 +3,7 @@
 export const SITE = 'https://synapse-medical.fr';
 export const DOCS = 'https://docs.synapse-medical.fr';
 export const DOCS_SHEETS = { fr: `${DOCS}/fiches/`, en: `${DOCS}/en/sheets/` };
-export const APP_LOGIN = 'https://www.synapse-medical.fr/login';
+export const APP_LOGIN = 'https://app.synapse-medical.fr/login';
 
 export const EMAIL = {
   contact: 'contact@synapse-medical.fr',
