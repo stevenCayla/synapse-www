@@ -1,0 +1,46 @@
+---
+import type { GetStaticPaths } from 'astro';
+import About from '../views/About.astro';
+import Blog from '../views/Blog.astro';
+import Careers from '../views/Careers.astro';
+import Case from '../views/Case.astro';
+import Cases from '../views/Cases.astro';
+import Changelog from '../views/Changelog.astro';
+import Demo from '../views/Demo.astro';
+import Disclosure from '../views/Disclosure.astro';
+import Feature from '../views/Feature.astro';
+import Features from '../views/Features.astro';
+import Glossary from '../views/Glossary.astro';
+import Integrations from '../views/Integrations.astro';
+import Legal from '../views/Legal.astro';
+import Post from '../views/Post.astro';
+import Pricing from '../views/Pricing.astro';
+import Privacy from '../views/Privacy.astro';
+import Role from '../views/Role.astro';
+import Roadmap from '../views/Roadmap.astro';
+import Security from '../views/Security.astro';
+import Status from '../views/Status.astro';
+import Tour from '../views/Tour.astro';
+import Trust from '../views/Trust.astro';
+import { LANGS } from '../i18n';
+import { GENERATED } from '../i18n/routes';
+
+// One static page per route and language: see src/i18n/routes.ts (slugs follow URLS.md).
+export const getStaticPaths = (() =>
+  GENERATED.flatMap((e) =>
+    LANGS.map((lang) => ({
+      params: { path: `${lang === 'en' ? 'en/' : ''}${e.slug[lang]}` },
+      props: { key: e.key, id: e.id, lang },
+    })),
+  )) satisfies GetStaticPaths;
+
+const { key, id, lang } = Astro.props;
+const views = {
+  features: Features, feature: Feature, role: Role, integrations: Integrations, pricing: Pricing, tour: Tour,
+  security: Security, trust: Trust, disclosure: Disclosure, legal: Legal, privacy: Privacy, status: Status, soon: Roadmap,
+  blog: Blog, post: Post, cases: Cases, case: Case, changelog: Changelog, glossary: Glossary, about: About, careers: Careers, demo: Demo,
+} as const;
+const View = views[key as keyof typeof views];
+---
+
+<View lang={lang} id={id!} />

@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import { PLANS } from '../data/pricing';
+import { DOC_NAMES } from '../data/security';
+import { tr, type L, type Lang } from '../i18n';
+import { EMAIL } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const required = t({ fr: 'Champ obligatoire', en: 'Required field' });
+const roles: L[] = [
+  { fr: 'Investigateur', en: 'Investigator' }, { fr: 'ARC', en: 'CRA' }, { fr: 'Data manager', en: 'Data manager' },
+  { fr: 'Chef de projet', en: 'Project manager' }, { fr: 'Promoteur', en: 'Sponsor' }, { fr: 'Qualité / DPO', en: 'Quality / DPO' }, { fr: 'Autre', en: 'Other' },
+];
+const sponsors: L[] = [{ fr: 'Académique', en: 'Academic' }, { fr: 'Industriel', en: 'Industry' }, 'CRO'];
+const volumes: L[] = ['1', { fr: '2 à 5', en: '2 to 5' }, { fr: 'Plus de 5', en: 'More than 5' }];
+// Pre-fill data for the form (?plan=…, ?doc=…, ?quote=…), read by scripts/demo.ts.
+const data = {
+  docs: Object.fromEntries(Object.entries(DOC_NAMES).map(([k, v]) => [k, t(v)])),
+  plans: Object.fromEntries(PLANS.map((p) => [p.k, t(p.n)])),
+};
+---
+
+<Base lang={lang} route="demo">
+  <div class="hero-wrap pg-hero">
+    <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+    <div style="position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:140px 32px 72px">
+      <div class="demo-g">
+        <div>
+          <span class="eyebrow"><b>30 min</b><span>{t({ fr: 'Visio, sans engagement', en: 'Video call, no commitment' })}</span></span>
+          <h1 set:html={t({ fr: 'Voyons Synapse <em>sur votre protocole.</em>', en: 'Let’s see Synapse <em>on your protocol.</em>' })} />
+          <p class="lede">{t({ fr: 'Un échange avec un chef de projet clinique, pas un commercial. Réponse sous un jour ouvré.', en: 'A conversation with a clinical project lead, not a salesperson. Reply within one business day.' })}</p>
+          <ul class="agenda">
+            <li><span>5 min</span><div><b>{t({ fr: 'Votre contexte', en: 'Your context' })}</b><small>{t({ fr: 'Phase, nombre de centres, contraintes réglementaires.', en: 'Phase, number of sites, regulatory constraints.' })}</small></div></li>
+            <li><span>15 min</span><div><b>{t({ fr: 'Démonstration ciblée', en: 'Focused demo' })}</b><small>{t({ fr: 'Sur une étude proche de la vôtre : eCRF, requêtes, monitoring.', en: 'On a study close to yours: eCRF, queries, monitoring.' })}</small></div></li>
+            <li><span>10 min</span><div><b>{t({ fr: 'Conformité et tarifs', en: 'Compliance and pricing' })}</b><small>{t({ fr: 'Validation, hébergement HDS, calendrier de mise en production.', en: 'Validation, HDS hosting, go-live timeline.' })}</small></div></li>
+          </ul>
+          <div class="demo-q">
+            <p>{t({ fr: '« La démo s’est faite sur un eCRF proche du nôtre. Nous avons validé le choix en une semaine. »', en: '“The demo ran on an eCRF close to ours. We confirmed our choice within a week.”' })}</p>
+            <div class="who"><span class="av">CL</span><div><b>Claire L.</b><small>{t({ fr: 'Cheffe de projet, CRO', en: 'Project lead, CRO' })}</small></div></div>
+          </div>
+        </div>
+        <div class="fcard" id="demo-card">
+          <h2>{t({ fr: 'Demander une démo', en: 'Book a demo' })}</h2>
+          <p>{t({ fr: 'Les champs marqués * sont obligatoires.', en: 'Fields marked * are required.' })}</p>
+          <form id="demo-f" class="fgrid" novalidate data-to={EMAIL.contact} data-subject={t({ fr: 'Demande de démo', en: 'Demo request' })}>
+            <label class="fld" data-req>{t({ fr: 'Prénom', en: 'First name' })} <span class="req">*</span><input name="fn" autocomplete="given-name" /><span class="err">{required}</span></label>
+            <label class="fld" data-req>{t({ fr: 'Nom', en: 'Last name' })} <span class="req">*</span><input name="ln" autocomplete="family-name" /><span class="err">{required}</span></label>
+            <label class="fld" data-req>{t({ fr: 'E-mail professionnel', en: 'Work email' })} <span class="req">*</span><input name="em" type="email" autocomplete="email" placeholder={t({ fr: 'prenom.nom@institut.fr', en: 'name@company.com' })} /><span class="err">{t({ fr: 'Adresse e-mail invalide', en: 'Invalid email address' })}</span></label>
+            <label class="fld">{t({ fr: 'Téléphone', en: 'Phone' })}<input name="tel" type="tel" autocomplete="tel" /></label>
+            <label class="fld" data-req>{t({ fr: 'Établissement', en: 'Organisation' })} <span class="req">*</span><input name="org" autocomplete="organization" /><span class="err">{required}</span></label>
+            <label class="fld">{t({ fr: 'Fonction', en: 'Role' })}<select name="role">{roles.map((o) => <option>{t(o)}</option>)}</select></label>
+            <fieldset class="fld full">
+              <legend>{t({ fr: 'Type de promoteur', en: 'Sponsor type' })}</legend>
+              <div class="segc">{sponsors.map((o, i) => <label><input type="radio" name="sp" value={t(o)} checked={i === 0} /><span>{t(o)}</span></label>)}</div>
+            </fieldset>
+            <fieldset class="fld full">
+              <legend>{t({ fr: 'Études prévues sur 12 mois', en: 'Studies planned in the next 12 months' })}</legend>
+              <div class="segc">{volumes.map((o, i) => <label><input type="radio" name="ns" value={t(o)} checked={i === 0} /><span>{t(o)}</span></label>)}</div>
+            </fieldset>
+            <label class="fld full">{t({ fr: 'Votre projet', en: 'Your project' })}<textarea name="msg" placeholder={t({ fr: 'Phase, aire thérapeutique, date de démarrage visée…', en: 'Phase, therapeutic area, target start date…' })}></textarea></label>
+            <div class="fld consent-w" data-req>
+              <label class="consent"><input type="checkbox" name="ok" /><span>{t({ fr: 'J’accepte que Synapse Medical utilise ces informations pour me recontacter au sujet de ma demande.', en: 'I agree that Synapse Medical may use this information to contact me about my request.' })} <span class="req">*</span></span></label>
+              <span class="err">{t({ fr: 'Merci de cocher cette case', en: 'Please tick this box' })}</span>
+            </div>
+            <div class="fsub">
+              <button class="btn pri" type="submit">{t({ fr: 'Préparer ma demande', en: 'Prepare my request' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></button>
+              <small>{t({ fr: 'Votre messagerie s’ouvre avec le message pré-rempli.', en: 'Your email app opens with the message pre-filled.' })}</small>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script type="application/json" id="demo-data" set:html={JSON.stringify(data)} />
+  <script>
+    import '../scripts/demo';
+  </script>
+</Base>
