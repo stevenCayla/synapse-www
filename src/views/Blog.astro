@@ -1,0 +1,39 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import PostCard from '../components/PostCard.astro';
+import Base from '../layouts/Base.astro';
+import { POSTS } from '../data/posts';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { DOCS_SHEETS } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+---
+
+<Base lang={lang} route="blog">
+  <Hero
+    badge="Blog"
+    tag={t({ fr: 'Réglementation, méthodes, produit', en: 'Regulation, methods, product' })}
+    h={t({ fr: 'Ressources pour vos <em>études cliniques.</em>', en: 'Resources for your <em>clinical studies.</em>' })}
+    p={t({ fr: 'Retours d’expérience et décryptages par les équipes produit, qualité et plateforme de Synapse.', en: 'Field experience and explainers from Synapse’s product, quality and platform teams.' })}
+  />
+  <section class="sec">
+    <div class="blist">
+      {POSTS.map((p, i) => <PostCard lang={lang} post={p} wide={i === 0} />)}
+      <div class="nl-card">
+        <h3>{t({ fr: 'Besoin d’un pas-à-pas ?', en: 'Need step-by-step help?' })}</h3>
+        <p>{t({ fr: 'Les guides par rôle, les fiches pratiques et les cahiers de recette sont dans la documentation.', en: 'Role-based guides, quick-reference sheets and UAT scripts live in the documentation.' })}</p>
+        <div class="actions" style="justify-content:flex-start">
+          <a class="btn sm pri" href={docsUrl(lang)}>Documentation</a>
+          <a class="btn sm" href={DOCS_SHEETS[lang]}>{t({ fr: 'Fiches pratiques', en: 'Quick-reference sheets' })}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <CtaBand lang={lang} />
+</Base>

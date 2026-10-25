@@ -1,0 +1,80 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Base from '../layouts/Base.astro';
+import { CASES } from '../data/cases';
+import { initials, tr, type L, type Lang } from '../i18n';
+import { casePath, path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const c = CASES.find((x) => x.k === id)!;
+const base = 'https://synapse-medical.fr';
+const ld = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t({ fr: 'Études de cas', en: 'Case studies' }), item: base + path('cases', lang) },
+      { '@type': 'ListItem', position: 2, name: t(c.org) },
+    ],
+  },
+];
+const sections: [string, L][] = [
+  ['defi', { fr: 'Le défi', en: 'The challenge' }],
+  ['solution', { fr: 'La solution', en: 'The solution' }],
+  ['resultats', { fr: 'Les résultats', en: 'The results' }],
+];
+---
+
+<Base lang={lang} route="case" id={id} ld={ld}>
+  <div class="hero-wrap pg-hero">
+    <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+    <div class="pg-hero-in">
+      <div class="crumbs"><a href={path('cases', lang)}>{t({ fr: 'Études de cas', en: 'Case studies' })}</a><span>/</span><span>{t(c.org)}</span></div>
+      <h1>{t(c.t)}</h1>
+      <p class="lede">{t(c.x)}</p>
+    </div>
+  </div>
+  <section class="sec">
+    <div class="facts">{c.facts.map((f) => <div><small>{t(f[0])}</small><b>{t(f[1])}</b></div>)}</div>
+    <div class="post-g" style="margin-top:48px">
+      <article class="prose">
+        <h2 id="defi">{t(sections[0][1])}</h2><p>{t(c.ch)}</p>
+        <h2 id="solution">{t(sections[1][1])}</h2><p>{t(c.so)}</p>
+        <h2 id="resultats">{t(sections[2][1])}</h2>
+        <div class="cms">{c.m.map((m) => <div><b>{t(m[0])}</b><small>{t(m[1])}</small></div>)}</div>
+        <div class="q" style="margin-top:28px">
+          <p>{t(c.q[0])}</p>
+          <div class="who"><span class="av">{initials(c.q[1])}</span><div><b>{c.q[1]}</b><small>{t(c.q[2])} · {t(c.org)}</small></div></div>
+        </div>
+      </article>
+      <aside class="ptoc">
+        <b>{t({ fr: 'Sommaire', en: 'Contents' })}</b>
+        {sections.map((s) => <a href={`#${s[0]}`}>{t(s[1])}</a>)}
+        <a class="btn sm pri" href={path('demo', lang)} style="border-left:0;padding-left:14px">{t({ fr: 'Demander une démo', en: 'Book a demo' })}</a>
+      </aside>
+    </div>
+  </section>
+  <section class="sec dots">
+    <h2 class="sub-h">{t({ fr: 'Autres études de cas', en: 'More case studies' })}</h2>
+    <div class="related">
+      {CASES.filter((x) => x !== c).map((x) => (
+        <a class="post ccard" href={casePath(lang, x.k)}>
+          <div class="bd">
+            <div class="meta"><b>{t(x.org)}</b><span>{x.facts.slice(0, 2).map((f) => t(f[1])).join(' · ')}</span></div>
+            <div class="cm">{t(x.m[0][0])}<small>{t(x.m[0][1])}</small></div>
+            <h3>{t(x.t)}</h3><p>{t(x.x)}</p>
+            <span class="more">{t({ fr: 'Lire l’étude de cas', en: 'Read the case study' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="cases" />
+  <script>
+    import '../scripts/toc';
+  </script>
+</Base>

@@ -1,0 +1,53 @@
+---
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { TEAM } from '../data/company';
+import { tr, type L, type Lang } from '../i18n';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const values: [L, L][] = [
+  [{ fr: 'Conformité d’abord', en: 'Compliance first' }, { fr: 'Chaque fonctionnalité est conçue, recettée et documentée pour une inspection.', en: 'Every feature is designed, tested and documented for inspection.' }],
+  [{ fr: 'Construit avec le terrain', en: 'Built with the field' }, { fr: 'Nos versions sont recettées avec des utilisateurs en centre.', en: 'Our releases are tested with users at site level.' }],
+  [{ fr: 'Données en France', en: 'Data in France' }, { fr: 'Hébergement HDS, équipes et support basés en Europe.', en: 'HDS hosting, teams and support based in Europe.' }],
+];
+---
+
+<Base lang={lang} route="about">
+  <Hero
+    badge={t({ fr: 'Société', en: 'Company' })}
+    tag="Synapse Medical"
+    h={t({ fr: 'Des outils à la hauteur <em>de la recherche clinique.</em>', en: 'Tools that live up to <em>clinical research.</em>' })}
+    p={t({ fr: 'Nous construisons Synapse avec les équipes qui conduisent les études : investigateurs, ARC, data managers et promoteurs.', en: 'We build Synapse with the teams who run studies: investigators, CRAs, data managers and sponsors.' })}
+  />
+  <section class="sec">
+    <div class="sec-2">
+      <div class="prose" style="max-width:none">
+        <h2 id="histoire" style="margin-top:0">{t({ fr: 'Notre histoire', en: 'Our story' })}</h2>
+        <p>{t({ fr: 'Synapse est né d’un constat partagé par des cliniciens et des ingénieurs : les outils de collecte de données freinent encore trop souvent les études, avec des eCRF longs à construire et des requêtes gérées par e-mail. [Année de création, fondateurs, étapes clés à compléter.]', en: 'Synapse grew out of a shared observation by clinicians and engineers: data collection tools still too often slow studies down, with eCRFs that take ages to build and queries handled by email. [Founding year, founders and milestones to complete.]' })}</p>
+        <h2 id="mission">{t({ fr: 'Notre mission', en: 'Our mission' })}</h2>
+        <p>{t({ fr: 'Rendre la collecte de données cliniques fiable, rapide et conforme, pour que les équipes se concentrent sur la science et les patients.', en: 'Make clinical data collection reliable, fast and compliant, so teams can focus on science and patients.' })}</p>
+      </div>
+      <div class="values">
+        {values.map((v) => <div class="badge"><b style="font-family:'Nunito Variable';font-weight:800;font-size:16px">{t(v[0])}</b><small>{t(v[1])}</small></div>)}
+      </div>
+    </div>
+  </section>
+  <section class="sec dots">
+    <h2 class="sub-h">{t({ fr: 'L’équipe', en: 'The team' })}</h2>
+    <div class="team">{TEAM.map((m) => <div class="tm"><span class="av">{m[0]}</span><b>{m[1]}</b><small>{t(m[2])}</small></div>)}</div>
+  </section>
+  <section class="sec">
+    <div class="cta">
+      <div>
+        <h2 set:html={t({ fr: 'Rejoindre <em>l’équipe</em>', en: 'Join <em>the team</em>' })} />
+        <p>{t({ fr: 'Produit, plateforme, qualité, projets cliniques : nous recrutons.', en: 'Product, platform, quality, clinical projects: we are hiring.' })}</p>
+      </div>
+      <div class="actions"><a class="btn pri" href={path('careers', lang)}>{t({ fr: 'Voir les offres', en: 'See open roles' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a></div>
+    </div>
+  </section>
+</Base>

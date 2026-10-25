@@ -1,0 +1,72 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import PostCard from '../components/PostCard.astro';
+import Base from '../layouts/Base.astro';
+import { AUTHORS, POSTS } from '../data/posts';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const p = POSTS.find((x) => x.id === id)!;
+const a = AUTHORS[p.a];
+const body = p.body[lang].replaceAll('{{DOCS}}', docsUrl(lang));
+const toc = [...body.matchAll(/<h2 id="([^"]+)">(.*?)<\/h2>/g)];
+const base = 'https://synapse-medical.fr';
+const ld = [
+  {
+    '@type': 'Article', headline: t(p.t), datePublished: p.iso, inLanguage: lang,
+    author: { '@type': 'Person', name: a.name },
+    publisher: { '@id': `${base}/#org` },
+    mainEntityOfPage: base + path('post', lang, id),
+  },
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Blog', item: base + path('blog', lang) },
+      { '@type': 'ListItem', position: 2, name: t(p.cat) },
+    ],
+  },
+];
+---
+
+<Base lang={lang} route="post" id={id} ld={ld}>
+  <div class="hero-wrap pg-hero">
+    <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+    <div class="pg-hero-in">
+      <div class="crumbs"><a href={path('blog', lang)}>Blog</a><span>/</span><span>{t(p.cat)}</span></div>
+      <h1>{t(p.t)}</h1>
+      <p class="lede">{t(p.x)}</p>
+      <div class="pmeta">
+        <span class="av">{a.initials}</span><b>{a.name}</b><span>·</span><span>{t(p.date)}</span><span>·</span><span>{p.min} {t({ fr: 'min de lecture', en: 'min read' })}</span>
+      </div>
+    </div>
+  </div>
+  <section class="sec">
+    <div style="max-width:1000px;margin:0 auto"><div class="cover">{t({ fr: 'image d’illustration', en: 'cover image' })}</div></div>
+    <div class="post-g">
+      <article class="prose">
+        <Fragment set:html={body} />
+        <div class="author"><span class="av">{a.initials}</span><div><b>{a.name}</b><small>{t(a.role)} · Synapse Medical</small></div></div>
+      </article>
+      <aside class="ptoc">
+        <b>{t({ fr: 'Sommaire', en: 'Contents' })}</b>
+        {toc.map((m) => <a href={`#${m[1]}`} set:html={m[2]} />)}
+        <a class="btn sm pri" href={path('demo', lang)} style="border-left:0;padding-left:14px">{t({ fr: 'Demander une démo', en: 'Book a demo' })}</a>
+      </aside>
+    </div>
+  </section>
+  <section class="sec dots">
+    <h2 class="sub-h">{t({ fr: 'Articles liés', en: 'Related articles' })}</h2>
+    <div class="related">{POSTS.filter((x) => x !== p).map((x) => <PostCard lang={lang} post={x} />)}</div>
+  </section>
+  <CtaBand lang={lang} />
+  <script>
+    import '../scripts/toc';
+  </script>
+</Base>

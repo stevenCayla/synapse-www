@@ -1,0 +1,40 @@
+---
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { HIRING_STEPS, JOBS } from '../data/company';
+import { tr, type L, type Lang } from '../i18n';
+import { EMAIL } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+---
+
+<Base lang={lang} route="careers">
+  <Hero
+    badge={t({ fr: 'Carrières', en: 'Careers' })}
+    tag={`${JOBS.length} ${t({ fr: 'postes ouverts', en: 'open roles' })}`}
+    h={t({ fr: 'Construisez les outils <em>de la recherche de demain.</em>', en: 'Build the tools <em>for tomorrow’s research.</em>' })}
+    p={t({ fr: 'Une équipe produit, plateforme et qualité qui travaille au contact des centres investigateurs.', en: 'A product, platform and quality team working closely with investigator sites.' })}
+  />
+  <section class="sec">
+    <div class="faq" style="max-width:none">
+      {JOBS.map((j, i) => (
+        <details open={i === 0}>
+          <summary><span class="job"><b>{t(j[0])}</b><small>{t(j[1])} · {t(j[2])}</small></span></summary>
+          <div class="prose" style="font-size:15.5px;max-width:none">
+            <Fragment set:html={t(j[3])} />
+            <p><a class="btn sm pri" href={`mailto:${EMAIL.jobs}?subject=${encodeURIComponent(t(j[0]))}`}>{t({ fr: 'Postuler', en: 'Apply' })}</a></p>
+          </div>
+        </details>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <h2 class="sub-h">{t({ fr: 'Notre processus', en: 'Our process' })}</h2>
+    <ol class="rflow">{HIRING_STEPS.map((s, i) => <li><span>0{i + 1}</span><b>{t(s)}</b></li>)}</ol>
+    <p class="p-note">{t({ fr: 'Pas d’offre pour vous ? Candidature spontanée : ', en: 'No role for you? Send an open application: ' })}<a href={`mailto:${EMAIL.jobs}`}>{EMAIL.jobs}</a></p>
+  </section>
+</Base>

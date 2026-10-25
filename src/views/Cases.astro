@@ -1,0 +1,39 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { CASES } from '../data/cases';
+import { tr, type L, type Lang } from '../i18n';
+import { casePath } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+---
+
+<Base lang={lang} route="cases">
+  <Hero
+    badge={t({ fr: 'Clients', en: 'Customers' })}
+    tag={t({ fr: 'Études de cas', en: 'Case studies' })}
+    h={t({ fr: 'Ils ont lancé leurs études <em>sur Synapse.</em>', en: 'They launched their studies <em>on Synapse.</em>' })}
+    p={t({ fr: 'Promoteurs académiques, CRO et biotech : contexte, mise en place et résultats.', en: 'Academic sponsors, CROs and biotech: context, set-up and results.' })}
+  />
+  <section class="sec">
+    <div class="blist">
+      {CASES.map((c) => (
+        <a class="post ccard" href={casePath(lang, c.k)}>
+          <div class="bd">
+            <div class="meta"><b>{t(c.org)}</b><span>{c.facts.slice(0, 2).map((f) => t(f[1])).join(' · ')}</span></div>
+            <div class="cm">{t(c.m[0][0])}<small>{t(c.m[0][1])}</small></div>
+            <h3>{t(c.t)}</h3>
+            <p>{t(c.x)}</p>
+            <span class="more">{t({ fr: 'Lire l’étude de cas', en: 'Read the case study' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+          </div>
+        </a>
+      ))}
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="cases" />
+</Base>

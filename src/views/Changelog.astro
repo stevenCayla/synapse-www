@@ -1,0 +1,57 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { CHANGE_TYPES, RELEASES } from '../data/changelog';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const current = RELEASES.find((r) => r.current)!;
+---
+
+<Base lang={lang} route="changelog">
+  <Hero
+    badge={`v${current.v}`}
+    tag={t({ fr: 'Dernière version', en: 'Latest release' })}
+    h={t({ fr: 'Les <em>nouveautés</em> de Synapse', en: 'What’s <em>new</em> in Synapse' })}
+    p={t({ fr: 'Chaque version est recettée et documentée avant sa mise en production. Le détail technique est dans la documentation.', en: 'Every release is tested and documented before go-live. Technical details are in the documentation.' })}
+  >
+    <div class="actions">
+      <a class="btn" href={docsUrl(lang, '/changelog/')}>{t({ fr: 'Changelog technique', en: 'Technical changelog' })}</a>
+      <a class="btn" href={path('soon', lang)}>{t({ fr: 'Feuille de route', en: 'Roadmap' })}</a>
+    </div>
+  </Hero>
+  <section class="sec">
+    <div class="chips" data-for="cl">
+      <button class="on" type="button" data-f="all">{t({ fr: 'Tout', en: 'All' })}</button>
+      {Object.entries(CHANGE_TYPES).map(([k, v]) => <button type="button" data-f={k}>{t(v)}</button>)}
+    </div>
+    <div class="cl" id="cl" data-f="all">
+      {RELEASES.map((r) => (
+        <div class="rel">
+          <div class="rel-h">
+            <b>v{r.v}</b><small>{t(r.date)}</small>
+            {r.current && <span class="tagk res">{t({ fr: 'Version actuelle', en: 'Current' })}</span>}
+          </div>
+          <div class="rel-b">
+            <h3>{t(r.title)}</h3>
+            <a class="doclink" href={docsUrl(lang, '/changelog/')}>{t({ fr: 'Note technique v', en: 'Technical note v' })}{r.v} ↗</a>
+            <ul class="chg">
+              {r.items.map((c) => <li data-t={c[0]}><span class={`ct ${c[0]}`}>{t(CHANGE_TYPES[c[0]])}</span><span>{t(c[1])}</span></li>)}
+            </ul>
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+  <CtaBand lang={lang} />
+  <script>
+    import '../scripts/changelog';
+  </script>
+</Base>

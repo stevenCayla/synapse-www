@@ -1,0 +1,51 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { GLOSSARY } from '../data/glossary';
+import { tr, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: Parameters<typeof tr>[1]) => tr(lang, o);
+
+const terms = GLOSSARY.map(([a, b]) => [t(a), t(b)] as const).sort((x, y) => x[0].localeCompare(y[0], lang));
+const letter = (s: string) => s[0].toUpperCase().replace(/[0-9]/, '#');
+const letters = [...new Set(terms.map((x) => letter(x[0])))];
+const seen = new Set<string>();
+const search = t({ fr: 'Filtrer les termes', en: 'Filter terms' });
+---
+
+<Base lang={lang} route="glossary">
+  <Hero
+    badge={t({ fr: 'Ressources', en: 'Resources' })}
+    tag={`${terms.length} ${t({ fr: 'termes', en: 'terms' })}`}
+    h={t({ fr: 'Glossaire de la <em>recherche clinique</em>', en: 'Clinical research <em>glossary</em>' })}
+    p={t({ fr: 'Les sigles et notions que vous croiserez dans une étude, expliqués simplement.', en: 'The acronyms and concepts you will meet in a study, explained simply.' })}
+  >
+    <label class="gl-f">
+      <svg class="i" aria-hidden="true"><use href="#i-search"></use></svg>
+      <input id="gl-q" placeholder={search} aria-label={search} />
+    </label>
+  </Hero>
+  <section class="sec">
+    <nav class="gl-l" aria-label="Index">{letters.map((x) => <a href={`#gl-${x === '#' ? '0' : x}`}>{x}</a>)}</nav>
+    <dl class="gl" id="gl">
+      {terms.map((x) => {
+        const k = letter(x[0]).replace('#', '0');
+        const first = !seen.has(k);
+        seen.add(k);
+        return <div class="gl-i" data-k={(x[0] + ' ' + x[1]).toLowerCase()}><dt id={first ? `gl-${k}` : undefined}>{x[0]}</dt><dd>{x[1]}</dd></div>;
+      })}
+    </dl>
+    <p class="gl-none" id="gl-none" hidden>{t({ fr: 'Aucun terme ne correspond.', en: 'No matching term.' })}</p>
+    <p class="p-note">{t({ fr: 'Le glossaire complet, avec renvois vers les guides, est dans la ', en: 'The full glossary, linked to the guides, is in the ' })}<a href={docsUrl(lang, '/resources/glossary/')}>documentation ↗</a></p>
+  </section>
+  <CtaBand lang={lang} variant="tour" />
+  <script>
+    import '../scripts/glossary';
+  </script>
+</Base>
