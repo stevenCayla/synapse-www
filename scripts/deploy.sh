@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 # Deploys dist/ to Cloudflare Workers: ./scripts/deploy.sh dev|prod
 #   dev  → https://dev-www.synapse-medical.fr (not indexed)
-#   prod → https://www.synapse-medical.fr
+#   prod → https://synapse-medical.fr
 # Authentication: "npx wrangler login" locally, or CLOUDFLARE_API_TOKEN and
 # CLOUDFLARE_ACCOUNT_ID in CI.
 set -eu
