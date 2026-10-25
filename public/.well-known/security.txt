@@ -1,0 +1,6 @@
+Contact: mailto:securite@synapse-medical.fr
+Expires: 2027-10-25T00:00:00.000Z
+Preferred-Languages: fr, en
+Canonical: https://synapse-medical.fr/.well-known/security.txt
+Policy: https://synapse-medical.fr/divulgation-responsable
+Acknowledgments: https://synapse-medical.fr/divulgation-responsable#engagements
