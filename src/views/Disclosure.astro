@@ -1,0 +1,21 @@
+---
+import LegalPage from '../components/LegalPage.astro';
+import { DISCLOSURE } from '../data/legal';
+import { tr, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: Parameters<typeof tr>[1]) => tr(lang, o);
+---
+
+<LegalPage
+  lang={lang}
+  route="disclosure"
+  badge="security.txt"
+  tag={t({ fr: 'Divulgation responsable', en: 'Responsible disclosure' })}
+  h={t({ fr: 'Signaler une <em>vulnérabilité</em>', en: 'Report a <em>vulnerability</em>' })}
+  p={t({ fr: 'Vous pensez avoir trouvé une faille ? Merci de nous l’indiquer avant toute divulgation publique.', en: 'Think you have found a vulnerability? Please tell us before any public disclosure.' })}
+  sections={DISCLOSURE}
+/>

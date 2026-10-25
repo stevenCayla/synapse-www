@@ -1,0 +1,79 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { tr, type L, type Lang } from '../i18n';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const arrow = '<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg>';
+const cards: { k: L; big: string; small: L; more: L; to: Parameters<typeof path>[0] }[] = [
+  { k: { fr: 'Disponibilité', en: 'Uptime' }, big: t({ fr: '99,98 %', en: '99.98%' }), small: { fr: 'sur 90 jours · tous les services opérationnels', en: 'over 90 days · all services operational' }, more: { fr: 'Page de statut', en: 'Status page' }, to: 'status' },
+  { k: { fr: 'Sécurité', en: 'Security' }, big: 'HDS · ISO 27001', small: { fr: 'AES-256, TLS 1.3, double authentification, PRA testé', en: 'AES-256, TLS 1.3, two-factor auth, tested DR' }, more: { fr: 'Mesures de sécurité', en: 'Security measures' }, to: 'security' },
+  { k: { fr: 'Données personnelles', en: 'Personal data' }, big: t({ fr: 'RGPD', en: 'GDPR' }), small: { fr: 'DPO dédié, sous-traitants en France et dans l’UE', en: 'Dedicated DPO, sub-processors in France and the EU' }, more: { fr: 'Politique de confidentialité', en: 'Privacy policy' }, to: 'privacy' },
+  { k: { fr: 'Vulnérabilités', en: 'Vulnerabilities' }, big: 'security.txt', small: { fr: 'Accusé de réception sous 24 h', en: 'Acknowledged within 24 hours' }, more: { fr: 'Divulgation responsable', en: 'Responsible disclosure' }, to: 'disclosure' },
+];
+const frameworks: [string | L, L][] = [
+  ['21 CFR Part 11', { fr: 'Conforme, évalué à chaque version', en: 'Compliant, assessed every release' }],
+  ['ICH-GCP E6(R3)', { fr: 'Conforme', en: 'Compliant' }],
+  ['GAMP 5', { fr: 'Système validé, dossier sur demande', en: 'Validated, package on request' }],
+  ['HDS', { fr: 'Hébergeur certifié', en: 'Certified host' }],
+  ['ISO 27001', { fr: 'Hébergeur certifié', en: 'Certified host' }],
+  [{ fr: 'RGPD', en: 'GDPR' }, { fr: 'DPO désigné, registre tenu', en: 'DPO appointed, register maintained' }],
+];
+const events: [L, L, Parameters<typeof path>[0]][] = [
+  [{ fr: '24 oct. 2026', en: 'Oct 24, 2026' }, { fr: 'Incident résolu — lenteurs sur l’import prospectif', en: 'Resolved incident — slow prospective imports' }, 'status'],
+  [{ fr: '18 oct. 2026', en: 'Oct 18, 2026' }, { fr: 'Version 3.1.0 validée et déployée', en: 'Release 3.1.0 validated and deployed' }, 'changelog'],
+  [{ fr: 'Sept. 2026', en: 'Sep 2026' }, { fr: 'Test d’intrusion annuel réalisé', en: 'Annual penetration test completed' }, 'security'],
+];
+---
+
+<Base lang={lang} route="trust">
+  <Hero
+    badge="Trust"
+    tag={t({ fr: 'Centre de confiance', en: 'Trust center' })}
+    h={t({ fr: 'Disponibilité, sécurité, conformité : <em>tout au même endroit.</em>', en: 'Uptime, security, compliance: <em>all in one place.</em>' })}
+    p={t({ fr: 'Pour vos DPO, responsables qualité, RSSI et auditeurs.', en: 'For your DPOs, quality leads, CISOs and auditors.' })}
+  >
+    <div class="actions">
+      <a class="btn pri" href={`${path('demo', lang)}?doc=validation`}>{t({ fr: 'Demander les documents', en: 'Request documents' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      <button class="btn" type="button" data-print>{t({ fr: 'Imprimer / PDF', en: 'Print / PDF' })}</button>
+    </div>
+  </Hero>
+  <section class="sec">
+    <div class="trust-g">
+      {cards.map((c) => (
+        <a class="tcard" href={path(c.to, lang)}>
+          <span class="kick">{t(c.k)}</span><b class="tbig">{c.big}</b><small>{t(c.small)}</small>
+          <span class="more">{t(c.more)}<Fragment set:html={arrow} /></span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <div class="sec-2">
+      <div>
+        <h2 class="sub-h">{t({ fr: 'Conformité', en: 'Compliance' })}</h2>
+        <div class="tw">
+          <table class="cmp" style="min-width:0">
+            <thead><tr><th>{t({ fr: 'Référentiel', en: 'Framework' })}</th><th style="text-align:left">{t({ fr: 'Statut', en: 'Status' })}</th></tr></thead>
+            <tbody>{frameworks.map((r) => <tr><td>{t(r[0])}</td><td style="text-align:left"><span class="dot d-ok">{t(r[1])}</span></td></tr>)}</tbody>
+          </table>
+        </div>
+      </div>
+      <div>
+        <h2 class="sub-h">{t({ fr: 'Derniers événements', en: 'Recent events' })}</h2>
+        <div class="docs-l">
+          {events.map((e) => (
+            <a class="doc-r" href={path(e[2], lang)} style="color:var(--ink)"><span class="fi" style="width:auto;padding:0 8px;height:auto;min-height:30px">{t(e[0])}</span><div><b>{t(e[1])}</b></div></a>
+          ))}
+        </div>
+      </div>
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="tour" />
+</Base>

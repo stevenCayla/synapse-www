@@ -1,0 +1,71 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { AUDIT_DOCS, FRAMEWORKS, PILLARS, SUBPROCESSORS } from '../data/security';
+import { tr, type L, type Lang } from '../i18n';
+import { path } from '../i18n/routes';
+import { EMAIL } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const demo = path('demo', lang);
+---
+
+<Base lang={lang} route="security">
+  <Hero
+    badge="HDS"
+    tag={t({ fr: 'Sécurité & conformité', en: 'Security & compliance' })}
+    h={t({ fr: 'Vos données d’étude, <em>protégées par conception.</em>', en: 'Your study data, <em>protected by design.</em>' })}
+    p={t({ fr: 'Tout ce dont votre DPO, votre responsable qualité et vos auditeurs ont besoin, au même endroit.', en: 'Everything your DPO, quality lead and auditors need, in one place.' })}
+  >
+    <div class="actions">
+      <a class="btn pri" href={`${demo}?doc=validation`}>{t({ fr: 'Demander le dossier de validation', en: 'Request the validation package' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      <a class="btn" href={path('trust', lang)}>{t({ fr: 'Centre de confiance', en: 'Trust center' })}</a>
+      <button class="btn" type="button" data-print>{t({ fr: 'Imprimer / PDF', en: 'Print / PDF' })}</button>
+    </div>
+  </Hero>
+  <section class="sec">
+    <div class="pillars">
+      {PILLARS.map((p) => (
+        <div class="card"><div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href={`#${p[0]}`}></use></svg></span><h3>{t(p[1])}</h3></div><p set:html={t(p[2])} /></div>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <h2 class="sub-h">{t({ fr: 'Référentiels', en: 'Frameworks' })}</h2>
+    <div class="badges" style="grid-template-columns:repeat(3,minmax(0,1fr))">
+      {FRAMEWORKS.map((b) => <div class="badge"><b>{t(b[0])}</b><small>{t(b[1])}</small></div>)}
+    </div>
+  </section>
+  <section class="sec">
+    <div class="sec-2">
+      <div>
+        <h2 class="sub-h">{t({ fr: 'Documents pour vos audits', en: 'Documents for your audits' })}</h2>
+        <div class="docs-l">
+          {AUDIT_DOCS.map((d) => (
+            <div class="doc-r"><span class="fi">{d[1]}</span><div><b>{t(d[2])}</b><small>{t(d[3])}</small></div><a class="btn sm" href={`${demo}?doc=${d[0]}`}>{t({ fr: 'Demander', en: 'Request' })}</a></div>
+          ))}
+        </div>
+        <p class="p-note" style="text-align:left">{t({ fr: 'Envoyés sous accord de confidentialité, sous deux jours ouvrés.', en: 'Sent under NDA within two business days.' })}</p>
+      </div>
+      <div>
+        <h2 class="sub-h">{t({ fr: 'Sous-traitants RGPD', en: 'GDPR sub-processors' })}</h2>
+        <div class="tw">
+          <table class="cmp" style="min-width:0">
+            <thead><tr><th>{t({ fr: 'Activité', en: 'Activity' })}</th><th style="text-align:left">{t({ fr: 'Localisation', en: 'Location' })}</th><th style="text-align:left">{t({ fr: 'Garanties', en: 'Safeguards' })}</th></tr></thead>
+            <tbody>{SUBPROCESSORS.map((s) => <tr><td>{t(s[0])}</td><td style="text-align:left">{t(s[1])}</td><td style="text-align:left">{t(s[2])}</td></tr>)}</tbody>
+          </table>
+        </div>
+        <div class="side-card" style="margin-top:16px">
+          <h3>{t({ fr: 'Signaler une vulnérabilité', en: 'Report a vulnerability' })}</h3>
+          <p>{t({ fr: 'Écrivez à', en: 'Email' })} <a href={`mailto:${EMAIL.security}`}>{EMAIL.security}</a>. {t({ fr: 'Nous accusons réception sous 24 h.', en: 'We acknowledge within 24 hours.' })}</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  <CtaBand lang={lang} />
+</Base>

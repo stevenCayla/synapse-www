@@ -1,0 +1,37 @@
+---
+import Base from '../layouts/Base.astro';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+---
+
+<Base lang={lang} route="nf">
+  <div class="hero-wrap pg-hero" style="min-height:calc(100vh - 1px)">
+    <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+    <div class="pg-hero-in" style="padding-top:170px;padding-bottom:120px">
+      <p class="nf-c">404</p>
+      <h1 set:html={t({ fr: 'Cette page s’est égarée <em>en cours d’étude.</em>', en: 'This page got lost <em>mid-study.</em>' })} />
+      <code class="nf-path" id="nf-path" hidden></code>
+      <p class="lede" style="margin-top:18px">{t({ fr: 'Elle a peut-être été déplacée ou renommée. Ces liens devraient vous remettre sur la bonne voie.', en: 'It may have been moved or renamed. These links should get you back on track.' })}</p>
+      <div class="actions">
+        <a class="btn pri" href={path('home', lang)}>{t({ fr: 'Retour à l’accueil', en: 'Back to home' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <a class="btn" href={docsUrl(lang)}>Documentation</a>
+        <a class="btn" href={path('status', lang)}>{t({ fr: 'Statut des services', en: 'Service status' })}</a>
+      </div>
+    </div>
+  </div>
+  <script>
+    // Shows the address that was requested (the page is served for any unknown path).
+    const el = document.getElementById('nf-path');
+    if (el) {
+      el.textContent = location.pathname;
+      el.hidden = false;
+    }
+  </script>
+</Base>

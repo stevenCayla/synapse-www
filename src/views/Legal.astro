@@ -1,0 +1,20 @@
+---
+import LegalPage from '../components/LegalPage.astro';
+import { LEGAL } from '../data/legal';
+import { tr, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: Parameters<typeof tr>[1]) => tr(lang, o);
+---
+
+<LegalPage
+  lang={lang}
+  route="legal"
+  badge={t({ fr: 'Légal', en: 'Legal' })}
+  tag={t({ fr: 'Mis à jour le 1er octobre 2026', en: 'Updated October 1, 2026' })}
+  h={t({ fr: 'Mentions <em>légales</em>', en: 'Legal <em>notice</em>' })}
+  sections={LEGAL}
+/>

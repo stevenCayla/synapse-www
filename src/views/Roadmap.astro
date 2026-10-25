@@ -1,0 +1,45 @@
+---
+import Base from '../layouts/Base.astro';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const items: [L, 'ok' | 'w' | 't'][] = [
+  ['Form builder', 'ok'],
+  ['Audit trail', 'ok'],
+  [{ fr: 'Import prospectif', en: 'Prospective import' }, 'w'],
+  [{ fr: 'Signature électronique eIDAS', en: 'eIDAS electronic signature' }, 'w'],
+  [{ fr: 'Export CDISC', en: 'CDISC export' }, 't'],
+];
+const label: Record<'ok' | 'w' | 't', L> = {
+  ok: { fr: 'Livré', en: 'Shipped' },
+  w: { fr: 'En recette', en: 'In UAT' },
+  t: { fr: 'Planifié', en: 'Planned' },
+};
+---
+
+<Base lang={lang} route="soon">
+  <div class="cs hero-wrap">
+    <div class="bg-anim" aria-hidden="true" style="z-index:0"><canvas class="net"></canvas></div>
+    <div class="cs-in">
+      <div class="cs-mark"><svg aria-hidden="true"><use href="#mark"></use></svg></div>
+      <span class="eyebrow"><b>{t({ fr: 'En préparation', en: 'In progress' })}</b><span>{t({ fr: 'Prochaine version majeure', en: 'Next major release' })}</span></span>
+      <h1 set:html={t({ fr: 'La prochaine version de Synapse <em>se prépare.</em>', en: 'The next version of Synapse <em>is in the works.</em>' })} />
+      <p class="lede">{t({ fr: 'Synapse est déjà utilisé en production par les centres investigateurs. Voici ce que nous préparons pour la suite, développé et recetté avec nos utilisateurs.', en: 'Synapse is already used in production by investigator sites. Here is what we are preparing next, built and tested with our users.' })}</p>
+      <div class="actions" style="margin-top:28px">
+        <a class="btn pri" href={path('home', lang)}><span>{t({ fr: 'Découvrir la version actuelle', en: 'Explore the current version' })}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <a class="btn" href={docsUrl(lang)}>{t({ fr: 'Lire la documentation', en: 'Read the documentation' })}</a>
+      </div>
+      <p class="small" style="margin-top:16px">{t({ fr: 'Déjà client ? Les nouveautés arrivent automatiquement sur votre espace, sans migration.', en: 'Already a customer? New features roll out to your workspace automatically, with no migration.' })}</p>
+      <div class="road">
+        <h2>{t({ fr: 'Feuille de route', en: 'Roadmap' })}</h2>
+        {items.map((i) => <div><span>{t(i[0])}</span><span class={`st-pill st-${i[1]}`}>{t(label[i[1]])}</span></div>)}
+      </div>
+    </div>
+  </div>
+</Base>

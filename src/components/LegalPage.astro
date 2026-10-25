@@ -1,0 +1,51 @@
+---
+import Hero from './Hero.astro';
+import Base from '../layouts/Base.astro';
+import type { Section } from '../data/legal';
+import { tr, type Lang } from '../i18n';
+import { path, type RouteKey } from '../i18n/routes';
+import { EMAIL } from '../site';
+
+interface Props {
+  lang: Lang;
+  route: RouteKey;
+  /** HTML of the title. */
+  h: string;
+  /** Badge + tag of the hero pill, when the page has one. */
+  badge?: string;
+  tag?: string;
+  p?: string;
+  sections: Section[];
+}
+const { lang, route, h, badge, tag, p, sections } = Astro.props;
+
+// "{{contact}}" etc. are replaced by the real addresses, "{{page:x}}" by the path of a page.
+const fill = (html: string) =>
+  html
+    .replace(/\{\{page:(\w+)\}\}/g, (_, k) => path(k as RouteKey, lang))
+    .replace(/\{\{(contact|dpo|security|jobs)\}\}/g, (_, k) => EMAIL[k as keyof typeof EMAIL]);
+const contents = tr(lang, { fr: 'Sommaire', en: 'Contents' });
+---
+
+<Base lang={lang} route={route}>
+  <Hero badge={badge} tag={tag} h={h} p={p} />
+  <section class="sec">
+    <div class="post-g">
+      <article class="prose">
+        {sections.map((s) => (
+          <>
+            <h2 id={s.id}>{tr(lang, s.title)}</h2>
+            <Fragment set:html={fill(tr(lang, s.body))} />
+          </>
+        ))}
+      </article>
+      <aside class="ptoc">
+        <b>{contents}</b>
+        {sections.map((s) => <a href={`#${s.id}`}>{tr(lang, s.title)}</a>)}
+      </aside>
+    </div>
+  </section>
+  <script>
+    import '../scripts/toc';
+  </script>
+</Base>

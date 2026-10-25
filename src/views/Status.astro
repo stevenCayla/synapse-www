@@ -1,0 +1,133 @@
+---
+import Base from '../layouts/Base.astro';
+import { COMPONENTS, type Component } from '../data/status';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { barsHtml, chartSvg, fmtPct, percentiles, uptimeOf } from '../lib/status-render';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const PER = 90;
+const { p50, p95 } = percentiles();
+
+const rows: Record<Component, { name: L; host?: string; degraded?: boolean }> = {
+  app: { name: { fr: 'Application web EDC', en: 'EDC web application' }, host: 'app.synapse-medical.fr' },
+  api: { name: { fr: 'API & intégrations', en: 'API & integrations' }, host: 'api.synapse-medical.fr' },
+  auth: { name: { fr: 'Authentification & SSO', en: 'Authentication & SSO' } },
+  imp: { name: { fr: 'Import prospectif', en: 'Prospective import' }, degraded: true },
+  exp: { name: { fr: 'Exports CDISC / CSV', en: 'CDISC / CSV exports' } },
+  sig: { name: { fr: 'Signatures électroniques', en: 'Electronic signatures' }, host: 'eIDAS' },
+  bak: { name: { fr: 'Sauvegardes HDS', en: 'HDS backups' } },
+};
+const incidents: { day: L; has?: boolean; card?: { tag: 'res' | 'mnt'; tagLabel: L; title: L; text: L; tl?: [string, L][] } }[] = [
+  {
+    day: { fr: '24 octobre 2026', en: 'October 24, 2026' }, has: true,
+    card: {
+      tag: 'res', tagLabel: { fr: 'Résolu', en: 'Resolved' },
+      title: { fr: 'Lenteurs sur l’import prospectif', en: 'Slow prospective imports' },
+      text: { fr: 'Les imports de fichiers volumineux (> 20 000 lignes) ont pris jusqu’à 4× plus de temps. Aucune perte de données.', en: 'Large file imports (> 20,000 rows) took up to 4× longer. No data was lost.' },
+      tl: [['16:42', { fr: 'Résolu — file de traitement rééquilibrée.', en: 'Resolved — processing queue rebalanced.' }], ['15:10', { fr: 'Identifié — saturation d’un worker d’import.', en: 'Identified — an import worker was saturated.' }], ['14:55', { fr: 'Investigation en cours.', en: 'Investigating.' }]],
+    },
+  },
+  { day: { fr: '23 octobre 2026', en: 'October 23, 2026' } },
+  {
+    day: { fr: '19 octobre 2026', en: 'October 19, 2026' },
+    card: {
+      tag: 'mnt', tagLabel: { fr: 'Maintenance planifiée', en: 'Scheduled maintenance' },
+      title: { fr: 'Mise à jour v3.1.0', en: 'v3.1.0 release' },
+      text: { fr: 'Déploiement de l’export CDISC ODM et de la signature eIDAS. Interruption de 12 minutes, de 22:00 à 22:12.', en: 'Rollout of CDISC ODM export and eIDAS signatures. 12-minute downtime, 22:00 to 22:12.' },
+    },
+  },
+  { day: { fr: '18 octobre 2026', en: 'October 18, 2026' } },
+];
+---
+
+<Base lang={lang} route="status" noindex={false}>
+  <div class="hero-wrap">
+    <div class="bg-anim" aria-hidden="true" style="z-index:0"><canvas class="net"></canvas></div>
+    <div class="stt-hero">
+      <span class="eyebrow"><b>LIVE</b><span>status.synapse-medical.fr</span></span>
+      <h1 set:html={t({ fr: 'Statut des <em>services Synapse</em>', en: 'Status of <em>Synapse services</em>' })} />
+      <p class="lede">{t({ fr: 'Disponibilité en temps réel de la plateforme EDC, de l’API et de l’hébergement HDS.', en: 'Real-time availability of the EDC platform, API and HDS hosting.' })}</p>
+      <div class="stt-banner">
+        <span class="pulse"></span>
+        <div><b>{t({ fr: 'Tous les systèmes principaux sont opérationnels', en: 'All core systems are operational' })}</b><small>{t({ fr: 'Mis à jour', en: 'Updated' })} <span id="stt-time"></span></small></div>
+        <a class="btn sm sub" href="#stt-sub">{t({ fr: 'S’abonner', en: 'Subscribe' })}</a>
+      </div>
+    </div>
+  </div>
+  <section class="sec" id="status-data">
+    <div class="stt-kpis">
+      <div><small>{t({ fr: 'Disponibilité 90 j', en: '90-day uptime' })}</small><b>{fmtPct(99.98, lang)} %</b></div>
+      <div><small>{t({ fr: 'Temps de réponse API', en: 'API response time' })}</small><b id="api-k">{p50} ms</b></div>
+      <div><small>{t({ fr: 'Incidents 30 j', en: 'Incidents (30 d)' })}</small><b>1</b></div>
+      <div><small>{t({ fr: 'Dernière sauvegarde', en: 'Last backup' })}</small><b>03:00</b></div>
+    </div>
+    <div class="api-card">
+      <div class="api-h">
+        <div><b>{t({ fr: 'Temps de réponse de l’API — 24 h', en: 'API response time — 24 h' })}</b><small>{t({ fr: 'Médiane mesurée depuis Paris toutes les 15 minutes', en: 'Median measured from Paris every 15 minutes' })}</small></div>
+        <span class="api-v" id="api-v">p50 {p50} ms · p95 {p95} ms</span>
+      </div>
+      <div class="api-ch" id="api-ch" set:html={chartSvg()} />
+      <div class="api-ax" id="api-ax"><span>−24 h</span><span>−12 h</span><span>{t({ fr: 'Maintenant', en: 'Now' })}</span></div>
+    </div>
+    <div class="stt-grid">
+      <div>
+        <div class="stt-ch">
+          <div class="kick">{t({ fr: 'Composants', en: 'Components' })}</div>
+          <div class="seg" id="stt-per" role="group" aria-label={t({ fr: 'Période', en: 'Period' })}>
+            <button data-n="30" type="button">{`30 ${t({ fr: 'j', en: 'd' })}`}</button><button data-n="90" type="button" class="on">{`90 ${t({ fr: 'j', en: 'd' })}`}</button><button data-n="365" type="button">{`365 ${t({ fr: 'j', en: 'd' })}`}</button>
+          </div>
+        </div>
+        <div class="stt-list">
+          {COMPONENTS.map((k) => (
+            <div class="stt-row">
+              <div class="stt-top">
+                <b><span>{t(rows[k].name)}</span>{rows[k].host && <small>{rows[k].host}</small>}</b>
+                <span class={`stt-ok${rows[k].degraded ? ' w' : ''}`}>{rows[k].degraded ? t({ fr: 'Performances dégradées', en: 'Degraded performance' }) : t({ fr: 'Opérationnel', en: 'Operational' })}</span>
+              </div>
+              <div class="bars" data-c={k} set:html={barsHtml(k, PER)} />
+              <div class="bars-l"><span data-ago>{lang === 'en' ? `${PER} days ago` : `il y a ${PER} jours`}</span><span data-up={k}>{fmtPct(uptimeOf(k, PER), lang)} % {t({ fr: 'de disponibilité', en: 'uptime' })}</span><span>{t({ fr: 'Aujourd’hui', en: 'Today' })}</span></div>
+            </div>
+          ))}
+        </div>
+        <div class="sec-h" style="margin:48px 0 18px"><div class="kick">{t({ fr: 'Historique des incidents', en: 'Incident history' })}</div></div>
+        <div class="inc">
+          {incidents.map((d) => (
+            <div class={`inc-day${d.has ? ' has' : ''}`}>
+              <h4>{t(d.day)}</h4>
+              {d.card ? (
+                <div class="inc-card">
+                  <span class={`tagk ${d.card.tag}`}>{t(d.card.tagLabel)}</span>
+                  <b>{t(d.card.title)}</b>
+                  <p>{t(d.card.text)}</p>
+                  {d.card.tl && <div class="tl">{d.card.tl.map((x) => <span><b>{x[0]}</b><span>{t(x[1])}</span></span>)}</div>}
+                </div>
+              ) : (
+                <p class="inc-none">{t({ fr: 'Aucun incident signalé.', en: 'No incidents reported.' })}</p>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+      <aside style="display:flex;flex-direction:column;gap:16px;position:sticky;top:90px">
+        <div class="side-card" id="stt-sub">
+          <h3>{t({ fr: 'Recevoir les alertes', en: 'Get alerts' })}</h3>
+          <p>{t({ fr: 'Incidents et maintenances planifiées, par e-mail.', en: 'Incidents and scheduled maintenance, by email.' })}</p>
+          <form class="notify" id="stt-form" data-subject={t({ fr: 'Abonnement aux alertes de statut', en: 'Status alerts subscription' })}>
+            <input type="email" required placeholder={t({ fr: 'votre@email-pro.fr', en: 'you@company.com' })} aria-label="Email" />
+            <button class="btn pri" type="submit">{t({ fr: 'S’abonner', en: 'Subscribe' })}</button>
+          </form>
+        </div>
+        <div class="side-card"><h3>{t({ fr: 'Prochaine maintenance', en: 'Next maintenance' })}</h3><p>{t({ fr: 'Mardi 4 novembre 2026, 22:00 – 22:30 (CET). Mise à jour de sécurité, aucune action requise.', en: 'Tuesday, November 4, 2026, 22:00 – 22:30 (CET). Security update, no action required.' })}</p></div>
+        <div class="side-card"><h3>{t({ fr: 'Besoin d’aide ?', en: 'Need help?' })}</h3><p>{t({ fr: 'Le support est joignable 24/7 pour les études en production.', en: 'Support is available 24/7 for studies in production.' })}</p><a class="btn sm" href={docsUrl(lang)} style="align-self:flex-start">Documentation</a></div>
+      </aside>
+    </div>
+  </section>
+  <script>
+    import '../scripts/status';
+  </script>
+</Base>
