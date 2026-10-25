@@ -1,0 +1,30 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Base from '../layouts/Base.astro';
+import { tr, type L, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+---
+
+<Base lang={lang} route="tour">
+  <div class="hero-wrap pg-hero">
+    <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+    <div style="position:relative;z-index:2;max-width:1180px;margin:0 auto;padding:130px 32px 64px">
+      <div style="text-align:center;margin-bottom:32px">
+        <span class="eyebrow"><b>{t({ fr: 'Visite guidée', en: 'Product tour' })}</b><span>{t({ fr: '2 minutes · sans inscription', en: '2 minutes · no sign-up' })}</span></span>
+        <h1 class="tour-h" set:html={t({ fr: 'Saisissez votre première visite <em>dans Synapse.</em>', en: 'Enter your first visit <em>in Synapse.</em>' })} />
+      </div>
+      <div class="tour" id="tour" data-demo={`${lang === 'en' ? '/en' : ''}/demo`}>
+        <noscript><p>{t({ fr: 'La visite guidée nécessite JavaScript.', en: 'The product tour needs JavaScript.' })}</p></noscript>
+      </div>
+    </div>
+  </div>
+  <CtaBand lang={lang} variant="tour" />
+  <script>
+    import '../scripts/tour';
+  </script>
+</Base>

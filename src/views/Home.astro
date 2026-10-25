@@ -1,0 +1,215 @@
+---
+import Faq from '../components/Faq.astro';
+import PostCard from '../components/PostCard.astro';
+import Base from '../layouts/Base.astro';
+import { POSTS } from '../data/posts';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+
+const FAQ: [L, L][] = [
+  [{ fr: 'Où sont hébergées les données ?', en: 'Where is the data hosted?' }, { fr: 'En France, chez un hébergeur certifié HDS, avec sauvegardes chiffrées quotidiennes sur un second site.', en: 'In France, with an HDS-certified host, with daily encrypted backups on a second site.' }],
+  [{ fr: 'Combien de temps pour lancer une étude ?', en: 'How long does it take to launch a study?' }, { fr: 'Comptez en général 2 à 4 semaines entre la réception du protocole et la mise en production, recette UAT comprise.', en: 'Typically 2 to 4 weeks from protocol receipt to go-live, UAT included.' }],
+  [{ fr: 'Peut-on reprendre une étude déjà démarrée ?', en: 'Can we take over a study already underway?' }, { fr: 'Oui. Le module d’import prospectif permet de charger les données existantes avec mapping et contrôles de cohérence.', en: 'Yes. The prospective import module loads existing data with mapping and consistency checks.' }],
+  [{ fr: 'Proposez-vous des formations ?', en: 'Do you offer training?' }, { fr: 'Des sessions par rôle sont incluses, ainsi que des fiches pratiques et une documentation complète en ligne.', en: 'Role-based sessions are included, along with quick-reference sheets and full online documentation.' }],
+];
+
+const ld = [
+  {
+    '@type': 'SoftwareApplication', name: 'Synapse EDC', applicationCategory: 'BusinessApplication', operatingSystem: 'Web',
+    publisher: { '@id': 'https://synapse-medical.fr/#org' },
+    offers: [
+      { '@type': 'Offer', name: t({ fr: 'Académique', en: 'Academic' }), price: '4900', priceCurrency: 'EUR' },
+      { '@type': 'Offer', name: t({ fr: 'Industrie', en: 'Industry' }), price: '14900', priceCurrency: 'EUR' },
+    ],
+  },
+  {
+    '@type': 'FAQPage',
+    mainEntity: FAQ.map((q) => ({ '@type': 'Question', name: t(q[0]), acceptedAnswer: { '@type': 'Answer', text: t(q[1]) } })),
+  },
+];
+
+const kpis: [L, string, number][] = [
+  [{ fr: 'Patients inclus', en: 'Enrolled patients' }, '412', 68],
+  [{ fr: 'Centres actifs', en: 'Active sites' }, '18', 90],
+  [{ fr: 'eCRF complétés', en: 'eCRFs completed' }, '87 %', 87],
+  [{ fr: 'Requêtes ouvertes', en: 'Open queries' }, '23', 22],
+];
+const rows: [string, string, string, 'ok' | 'w' | 'ko', L, string][] = [
+  ['P-0412', 'CHU Lyon', 'V3 · M6', 'ok', { fr: 'Validé', en: 'Verified' }, '2 h'],
+  ['P-0398', 'AP-HP Bichat', 'V2 · M3', 'w', { fr: 'Requête', en: 'Query' }, '5 h'],
+  ['P-0377', 'CHU Nantes', 'V4 · M12', 'ok', { fr: 'Validé', en: 'Verified' }, '1 j'],
+  ['P-0361', 'CHU Lille', t({ fr: 'V1 · Inclusion', en: 'V1 · Enrolment' }), 'ko', { fr: 'Manquant', en: 'Missing' }, '2 j'],
+];
+const side: L[] = [{ fr: 'Tableau de bord', en: 'Dashboard' }, 'Patients', { fr: 'Formulaires', en: 'Forms' }, { fr: 'Requêtes', en: 'Queries' }, 'Import'];
+const logos = ['Gustave Roussy', 'AP-HP', 'CHU de Lyon', 'Inserm', 'CHU de Bordeaux', 'CHU de Nantes'];
+const quotes: [L, string, L][] = [
+  [{ fr: '« Nos centres ont été formés en une demi-journée. Le taux de requêtes a chuté dès le premier mois. »', en: '“Our sites were trained in half a day. Query rates dropped in the very first month.”' }, 'Claire L.', { fr: 'Cheffe de projet, CRO', en: 'Project lead, CRO' }],
+  [{ fr: '« L’import prospectif nous a évité trois semaines de ressaisie sur une étude déjà lancée. »', en: '“Prospective import saved us three weeks of re-entry on a study already underway.”' }, 'Thomas M.', { fr: 'Data manager, CHU', en: 'Data manager, university hospital' }],
+  [{ fr: '« L’audit trail est lisible. Lors de l’inspection, tout était déjà prêt. »', en: '“The audit trail is readable. When the inspection came, everything was ready.”' }, 'Sophie B.', { fr: 'Responsable qualité, promoteur', en: 'Quality lead, sponsor' }],
+];
+const badges: [L, L][] = [
+  ['21 CFR Part 11', { fr: 'Signatures & enregistrements électroniques', en: 'Electronic records & signatures' }],
+  ['ICH-GCP E6(R3)', { fr: 'Bonnes pratiques cliniques', en: 'Good clinical practice' }],
+  [{ fr: 'RGPD', en: 'GDPR' }, { fr: 'Protection des données personnelles', en: 'Personal data protection' }],
+  ['HDS', { fr: 'Hébergeur de données de santé', en: 'Health data hosting' }],
+  ['GAMP 5', { fr: 'Validation des systèmes informatisés', en: 'Computerised system validation' }],
+  ['ISO 27001', { fr: 'Sécurité de l’information', en: 'Information security' }],
+];
+const demo = path('demo', lang);
+---
+
+<Base lang={lang} route="home" ld={ld}>
+  <div class="hero-wrap">
+    <div class="bg-anim" aria-hidden="true" style="z-index:0"><canvas class="net"></canvas></div>
+    <div class="hero">
+      <a class="eyebrow" href={path('changelog', lang)}>
+        <b>{t({ fr: 'Nouveau', en: 'New' })}</b><span>{t({ fr: 'Import de données prospectives — v3.1', en: 'Prospective data import — v3.1' })}</span>
+      </a>
+      <h1 set:html={t({ fr: 'La recherche clinique, <em>enfin fluide</em>, du protocole à la base gelée.', en: 'Clinical research, <em>finally seamless</em>, from protocol to database lock.' })} />
+      <p class="lede">{t({ fr: 'Synapse EDC réunit conception d’études, saisie eCRF, monitoring et export dans une plateforme conforme 21 CFR Part 11 — pensée pour les investigateurs, ARC et data managers.', en: 'Synapse EDC brings study design, eCRF entry, monitoring and export together in one 21 CFR Part 11 compliant platform — built for investigators, CRAs and data managers.' })}</p>
+      <div class="actions">
+        <a class="btn pri" href={demo}><span>{t({ fr: 'Demander une démo', en: 'Book a demo' })}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <a class="btn" href={path('tour', lang)}>{t({ fr: 'Faire la visite guidée', en: 'Take the product tour' })}</a>
+        <a class="btn" href={docsUrl(lang)}>{t({ fr: 'Lire la documentation', en: 'Read the documentation' })}</a>
+      </div>
+      <div class="stack"><span>{t({ fr: 'Hébergement HDS', en: 'HDS hosting' })}</span><span>21 CFR Part 11</span><span>ICH-GCP E6(R3)</span><span>{t({ fr: 'RGPD', en: 'GDPR' })}</span><span>Audit trail</span></div>
+      <div class="mock" aria-hidden="true">
+        <div class="mock-h"><i></i><i></i><i></i><span>app.synapse-medical.fr/etudes/cardio-prosp-24</span></div>
+        <div class="mock-in">
+          <aside class="m-side">
+            <div class="st">{t({ fr: 'ÉTUDE', en: 'STUDY' })}</div>
+            {side.map((s, i) => <a class={i === 0 ? 'on' : ''}><i></i><span>{t(s)}</span></a>)}
+            <div class="st">ADMIN</div>
+            <a><i></i><span>{t({ fr: 'Utilisateurs', en: 'Users' })}</span></a><a><i></i>Audit trail</a><a><i></i>Exports</a>
+          </aside>
+          <div class="m-main">
+            <div class="m-top"><h4>CARDIO-PROSP-24</h4><span class="tag">{t({ fr: 'Phase III', en: 'Phase III' })}</span><span class="chip">{t({ fr: 'En cours', en: 'Ongoing' })}</span></div>
+            <div class="m-kpis">{kpis.map((k) => <div class="kpi"><small>{t(k[0])}</small><b>{k[1]}</b><div class="bar"><i style={`width:${k[2]}%`}></i></div></div>)}</div>
+            <div class="m-table">
+              <div class="m-row"><span>PATIENT</span><span>{t({ fr: 'CENTRE', en: 'SITE' })}</span><span>{t({ fr: 'VISITE', en: 'VISIT' })}</span><span>{t({ fr: 'STATUT', en: 'STATUS' })}</span><span>{t({ fr: 'MAJ', en: 'UPDATED' })}</span></div>
+              {rows.map((r) => <div class="m-row"><code>{r[0]}</code><span>{r[1]}</span><span>{r[2]}</span><span class={`dot d-${r[3]}`}>{t(r[4])}</span><span>{r[5]}</span></div>)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <section class="sec dots" style="padding-top:44px;padding-bottom:56px;text-align:center">
+    <div class="kick">{t({ fr: 'Ils conduisent leurs études sur Synapse', en: 'Teams running their studies on Synapse' })}</div>
+    <div class="marq" aria-hidden="true">
+      <div class="marq-t">
+        {[0, 1].map(() => logos.map((l, i) => <span class={`w${i + 1}`}>{l}</span>))}
+      </div>
+    </div>
+    <div class="stats">
+      <div><b data-count="127">127</b><small>{t({ fr: 'études actives', en: 'active studies' })}</small></div>
+      <div><b data-count="8413">8 413</b><small>{t({ fr: 'patients suivis', en: 'patients followed' })}</small></div>
+      <div><b data-count="341" data-suf=" K">341 K</b><small>{t({ fr: 'données collectées', en: 'data points collected' })}</small></div>
+      <div class="live"><b data-count="342" data-pre="+">+342</b><small>{t({ fr: 'cliniciens en ligne', en: 'clinicians online' })}</small></div>
+    </div>
+  </section>
+
+  <section class="sec" id="produit">
+    <div class="sec-h">
+      <div class="kick">{t({ fr: 'Produit', en: 'Product' })}</div>
+      <h2 class="sec-t" set:html={t({ fr: 'Tout le cycle de l’étude, <em>une seule plateforme.</em>', en: 'The whole study lifecycle, <em>one platform.</em>' })} />
+      <p>{t({ fr: 'Fini les tableurs, les PDF annotés et les allers-retours. Chaque rôle retrouve ce dont il a besoin, au bon moment.', en: 'No more spreadsheets, annotated PDFs or back-and-forth. Every role finds what they need, when they need it.' })}</p>
+    </div>
+    <div class="bento">
+      <div class="card c-a">
+        <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href="#i-form"></use></svg></span><h3>{t({ fr: 'Form builder eCRF', en: 'eCRF form builder' })}</h3></div>
+        <p>{t({ fr: 'Concevez vos formulaires par glisser-déposer, avec contrôles de cohérence, champs conditionnels et versionnage du protocole.', en: 'Design forms by drag and drop, with edit checks, conditional fields and protocol versioning.' })}</p>
+        <div class="vis fb"><div><b>{t({ fr: 'Date de naissance', en: 'Date of birth' })}</b><i></i></div><div class="sel"><b>{t({ fr: 'Fraction d’éjection (%)', en: 'Ejection fraction (%)' })}</b><i></i></div><div><b>{t({ fr: 'Traitement concomitant', en: 'Concomitant medication' })}</b><i></i></div></div>
+      </div>
+      <div class="card c-b">
+        <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href="#i-shield"></use></svg></span><h3>{t({ fr: 'Audit trail natif', en: 'Native audit trail' })}</h3></div>
+        <p>{t({ fr: 'Chaque saisie, correction et signature est tracée et horodatée.', en: 'Every entry, correction and signature is tracked and time-stamped.' })}</p>
+        <div class="vis audit"><div><b>14:02</b> P-0398 · FEVG 45 → 48</div><div><b>14:02</b> <span>{t({ fr: 'motif : erreur de saisie', en: 'reason: data entry error' })}</span></div><div><b>14:05</b> <span>{t({ fr: 'signé · Dr Martin', en: 'signed · Dr Martin' })}</span></div></div>
+      </div>
+      <div class="card c-c">
+        <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href="#i-users"></use></svg></span><h3>{t({ fr: 'Rôles & permissions', en: 'Roles & permissions' })}</h3></div>
+        <p>{t({ fr: 'Accès granulaires par étude, centre et profil.', en: 'Granular access by study, site and profile.' })}</p>
+        <div class="vis pills"><span class="on">{t({ fr: 'Investigateur', en: 'Investigator' })}</span><span>{t({ fr: 'ARC', en: 'CRA' })}</span><span class="on">Data manager</span><span>{t({ fr: 'Promoteur', en: 'Sponsor' })}</span></div>
+      </div>
+      <div class="card c-d">
+        <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href="#i-import"></use></svg></span><h3>{t({ fr: 'Import prospectif', en: 'Prospective import' })}</h3></div>
+        <p>{t({ fr: 'Reprenez vos données existantes avec mapping et validation ligne à ligne.', en: 'Bring in existing data with mapping and row-by-row validation.' })}</p>
+        <div class="vis flow"><span>.xlsx</span><em>→</em><span>mapping</span><em>→</em><span>{t({ fr: 'contrôles', en: 'checks' })}</span><em>→</em><span>eCRF</span></div>
+      </div>
+      <div class="card c-e">
+        <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href="#i-flask"></use></svg></span><h3>{t({ fr: 'Recette intégrée', en: 'Built-in UAT' })}</h3></div>
+        <p>{t({ fr: 'Plans de test exécutables, statuts OK / KO / Bloqué et PV de recette signable en PDF.', en: 'Executable test plans, OK / KO / Blocked statuses and a signable PDF acceptance report.' })}</p>
+        <div class="vis pills"><span class="ok">12 OK</span><span class="ko">1 KO</span><span class="bl">{t({ fr: '2 Bloqué', en: '2 Blocked' })}</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec dots">
+    <div class="sec-h">
+      <div class="kick">{t({ fr: 'Comment ça marche', en: 'How it works' })}</div>
+      <h2 class="sec-t" set:html={t({ fr: 'De la conception à l’export, <em>en trois temps.</em>', en: 'From design to export, <em>in three steps.</em>' })} />
+    </div>
+    <div class="steps">
+      <div class="step"><span class="n">{t({ fr: '01 — Concevoir', en: '01 — Design' })}</span><h3>{t({ fr: 'Paramétrez l’étude', en: 'Set up the study' })}</h3><p>{t({ fr: 'Visites, formulaires, centres et utilisateurs. Testez en environnement UAT avant la mise en production.', en: 'Visits, forms, sites and users. Test in a UAT environment before going live.' })}</p></div>
+      <div class="step"><span class="n">{t({ fr: '02 — Collecter', en: '02 — Collect' })}</span><h3>{t({ fr: 'Saisissez et monitorez', en: 'Enter and monitor' })}</h3><p>{t({ fr: 'Les centres saisissent, les ARC vérifient, les requêtes se résolvent directement dans l’eCRF.', en: 'Sites enter data, CRAs verify, queries are resolved right inside the eCRF.' })}</p></div>
+      <div class="step"><span class="n">{t({ fr: '03 — Exploiter', en: '03 — Use' })}</span><h3>{t({ fr: 'Gelez et exportez', en: 'Lock and export' })}</h3><p>{t({ fr: 'Gel de base, export CDISC / CSV et rapports prêts pour l’analyse statistique.', en: 'Database lock, CDISC / CSV export and reports ready for statistical analysis.' })}</p></div>
+    </div>
+  </section>
+
+  <section class="sec comp" id="conformite">
+    <div>
+      <div class="kick">{t({ fr: 'Conformité', en: 'Compliance' })}</div>
+      <h2 class="sec-t" set:html={t({ fr: 'La conformité réglementaire, <em>par défaut.</em>', en: 'Regulatory compliance, <em>by default.</em>' })} />
+      <p style="color:var(--ink2);font-size:17px;margin-top:14px">{t({ fr: 'Synapse est validé selon GAMP 5 et hébergé sur infrastructure certifiée HDS. Les dossiers de validation sont disponibles pour vos audits.', en: 'Synapse is validated under GAMP 5 and hosted on HDS-certified infrastructure. Validation packages are available for your audits.' })}</p>
+      <ul>
+        {[{ fr: 'Signatures électroniques avec ré-authentification', en: 'Electronic signatures with re-authentication' }, { fr: 'Pistes d’audit non modifiables, exportables', en: 'Tamper-proof, exportable audit trails' }, { fr: 'Pseudonymisation des données patient', en: 'Patient data pseudonymisation' }].map((l) => (
+          <li><svg class="i" aria-hidden="true"><use href="#i-check"></use></svg><span>{t(l)}</span></li>
+        ))}
+      </ul>
+    </div>
+    <div class="badges">{badges.map((b) => <div class="badge"><b>{t(b[0])}</b><small>{t(b[1])}</small></div>)}</div>
+  </section>
+
+  <section class="sec dots" id="clients">
+    <div class="sec-h c">
+      <div class="kick">{t({ fr: 'Témoignages', en: 'Testimonials' })}</div>
+      <h2 class="sec-t" set:html={t({ fr: 'Adopté par les équipes <em>sur le terrain.</em>', en: 'Adopted by teams <em>in the field.</em>' })} />
+    </div>
+    <div class="quotes">
+      {quotes.map((q) => (
+        <div class="q"><p>{t(q[0])}</p><div class="who"><span class="av">{q[1].split(' ').map((x) => x[0]).join('')}</span><div><b>{q[1]}</b><small>{t(q[2])}</small></div></div></div>
+      ))}
+    </div>
+  </section>
+
+  <section class="sec" id="blog">
+    <div class="blog-h">
+      <div class="sec-h"><div class="kick">Blog</div><h2 class="sec-t" set:html={t({ fr: 'Ressources pour vos <em>études cliniques.</em>', en: 'Resources for your <em>clinical studies.</em>' })} /></div>
+      <a class="btn sm" href={path('blog', lang)}><span>{t({ fr: 'Tous les articles', en: 'All articles' })}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+    </div>
+    <div class="blog">{POSTS.map((p) => <PostCard lang={lang} post={p} />)}</div>
+  </section>
+
+  <section class="sec" id="faq">
+    <div class="sec-h c"><div class="kick">FAQ</div><h2 class="sec-t" set:html={t({ fr: 'Questions <em>fréquentes</em>', en: 'Frequently asked <em>questions</em>' })} /></div>
+    <Faq lang={lang} items={FAQ} />
+    <div class="cta" style="margin-top:72px">
+      <div>
+        <h2 set:html={t({ fr: 'Prêt à lancer votre <em>prochaine étude</em> ?', en: 'Ready to launch your <em>next study</em>?' })} />
+        <p>{t({ fr: 'Échangez 30 minutes avec notre équipe pour voir Synapse appliqué à votre protocole.', en: 'Spend 30 minutes with our team to see Synapse applied to your protocol.' })}</p>
+      </div>
+      <div class="actions">
+        <a class="btn" href={docsUrl(lang)}>{t({ fr: 'Explorer la documentation', en: 'Explore the documentation' })}</a>
+        <a class="btn pri" href={demo}><span>{t({ fr: 'Demander une démo', en: 'Book a demo' })}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      </div>
+    </div>
+  </section>
+</Base>

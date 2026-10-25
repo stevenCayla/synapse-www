@@ -1,0 +1,122 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Faq from '../components/Faq.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { ADDONS, CMP, PLANS, PRICING_FAQ } from '../data/pricing';
+import { tr, type L, type Lang } from '../i18n';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const demo = path('demo', lang);
+const ld = [
+  {
+    '@type': 'SoftwareApplication', name: 'Synapse EDC', applicationCategory: 'BusinessApplication', operatingSystem: 'Web',
+    publisher: { '@id': 'https://synapse-medical.fr/#org' },
+    offers: [
+      { '@type': 'Offer', name: t({ fr: 'Académique', en: 'Academic' }), price: '4900', priceCurrency: 'EUR' },
+      { '@type': 'Offer', name: t({ fr: 'Industrie', en: 'Industry' }), price: '14900', priceCurrency: 'EUR' },
+    ],
+  },
+  { '@type': 'FAQPage', mainEntity: PRICING_FAQ.map((q) => ({ '@type': 'Question', name: t(q[0]), acceptedAnswer: { '@type': 'Answer', text: t(q[1]) } })) },
+];
+---
+
+<Base lang={lang} route="pricing" ld={ld}>
+  <Hero
+    badge={t({ fr: 'Tarifs', en: 'Pricing' })}
+    tag={t({ fr: 'Tarifs indicatifs HT', en: 'Indicative prices excl. VAT' })}
+    h={t({ fr: 'Un tarif simple, <em>par étude.</em>', en: 'Simple pricing, <em>per study.</em>' })}
+    p={t({ fr: 'Hébergement HDS, sauvegardes, mises à jour et support inclus. La conception et la recette ne sont pas facturées.', en: 'HDS hosting, backups, updates and support included. Design and UAT are never billed.' })}
+  >
+    <div class="actions">
+      <a class="btn pri" href="#calc">{t({ fr: 'Estimer mon budget', en: 'Estimate my budget' })}</a>
+      <button class="btn" type="button" data-print>{t({ fr: 'Imprimer / PDF', en: 'Print / PDF' })}</button>
+    </div>
+  </Hero>
+
+  <section class="sec">
+    <div class="plans">
+      {PLANS.map((p) => (
+        <div class={`plan${p.feat ? ' feat' : ''}`}>
+          {p.feat && <span class="flag">{t({ fr: 'Le plus choisi', en: 'Most popular' })}</span>}
+          <h3>{t(p.n)}</h3>
+          <p class="for">{t(p.f)}</p>
+          <div class="price"><b>{t(p.p)}</b><small>{t(p.u)}</small></div>
+          <ul>
+            {p.h && <li class="h">{t(p.h)}</li>}
+            {p.li.map((x) => <li><svg class="i" aria-hidden="true"><use href="#i-check"></use></svg><span>{t(x)}</span></li>)}
+          </ul>
+          <a class={`btn${p.feat ? ' pri' : ''}`} href={`${demo}?plan=${p.k}`}>{p.k === 'enterprise' ? t({ fr: 'Nous contacter', en: 'Contact us' }) : t({ fr: 'Demander une démo', en: 'Book a demo' })}</a>
+        </div>
+      ))}
+    </div>
+    <p class="p-note">{t({ fr: 'Projet académique sans financement ? Contactez-nous : nous accompagnons chaque année plusieurs études à tarif réduit.', en: 'Unfunded academic project? Get in touch: we support several studies each year at a reduced rate.' })}</p>
+  </section>
+
+  <section class="sec dots" id="calc" data-demo={demo}>
+    <div class="calc">
+      <div>
+        <div class="kick">{t({ fr: 'Estimation', en: 'Estimate' })}</div>
+        <h2 class="sec-t" style="font-size:clamp(28px,3vw,38px)" set:html={t({ fr: 'Calculez <em>votre budget annuel.</em>', en: 'Estimate <em>your annual budget.</em>' })} />
+        <div class="calc-f">
+          <fieldset class="fld full">
+            <legend>{t({ fr: 'Offre', en: 'Plan' })}</legend>
+            <div class="segc">
+              <label><input type="radio" name="c-plan" value="academic" checked /><span>{t({ fr: 'Académique', en: 'Academic' })}</span></label>
+              <label><input type="radio" name="c-plan" value="industry" /><span>{t({ fr: 'Industrie', en: 'Industry' })}</span></label>
+            </div>
+          </fieldset>
+          <label class="fld full">{t({ fr: 'Études en production', en: 'Studies in production' })} <output id="c-n-o">1</output><input type="range" id="c-n" min="1" max="10" value="1" /></label>
+          <label class="fld full">{t({ fr: 'Jours de formation sur site', en: 'On-site training days' })} <output id="c-t-o">0</output><input type="range" id="c-t" min="0" max="5" value="0" /></label>
+          <label class="consent"><input type="checkbox" id="c-imp" /><span>{t({ fr: 'Import prospectif', en: 'Prospective import' })} <small id="c-imp-n"></small></span></label>
+          <label class="consent"><input type="checkbox" id="c-build" /><span>{t({ fr: 'Paramétrage eCRF par nos équipes (à partir de 2 500 € / étude)', en: 'eCRF build by our team (from €2,500 / study)' })}</span></label>
+        </div>
+      </div>
+      <div class="calc-r" aria-live="polite">
+        <small>{t({ fr: 'Estimation annuelle HT', en: 'Annual estimate excl. VAT' })}</small>
+        <b id="c-tot">—</b>
+        <ul id="c-lines"></ul>
+        <p class="calc-hint" id="c-hint" hidden>{t({ fr: 'Au-delà de 5 études, l’offre Entreprise & CRO est généralement plus avantageuse.', en: 'Beyond 5 studies, the Enterprise & CRO plan is usually better value.' })}</p>
+        <a class="btn pri" id="c-cta" href={demo}>{t({ fr: 'Recevoir ce devis', en: 'Get this quote' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <small class="calc-n">{t({ fr: 'Estimation indicative, hors options spécifiques.', en: 'Indicative estimate, excluding specific options.' })}</small>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="sub-h">{t({ fr: 'Comparer les offres', en: 'Compare plans' })}</h2>
+    <div class="tw">
+      <table class="cmp">
+        <thead><tr><th></th>{PLANS.map((p) => <th>{t(p.n)}</th>)}</tr></thead>
+        <tbody>
+          {CMP.map((r) =>
+            r.length === 1 ? (
+              <tr class="g"><td colspan="4">{t(r[0])}</td></tr>
+            ) : (
+              <tr>
+                <td>{t(r[0])}</td>
+                {r.slice(1).map((v) => (v === 1 ? <td class="y"><span aria-label={t({ fr: 'Inclus', en: 'Included' })}>✓</span></td> : v === 0 ? <td class="n"><span aria-label={t({ fr: 'Non inclus', en: 'Not included' })}>—</span></td> : <td>{t(v as L)}</td>))}
+              </tr>
+            ),
+          )}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2 class="sub-h">{t({ fr: 'Options', en: 'Add-ons' })}</h2>
+    <div class="addons">{ADDONS.map((a) => <div class="addon"><div><b>{t(a[0])}</b><small>{t(a[1])}</small></div><span>{t(a[2])}</span></div>)}</div>
+    <h2 class="sub-h" style="margin-top:56px">{t({ fr: 'Questions sur les tarifs', en: 'Pricing questions' })}</h2>
+    <Faq lang={lang} items={PRICING_FAQ} />
+  </section>
+  <CtaBand lang={lang} />
+  <script>
+    import '../scripts/calc';
+  </script>
+</Base>

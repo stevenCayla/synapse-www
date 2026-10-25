@@ -1,0 +1,59 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { ROLES } from '../data/roles';
+import { initials, tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path, rolePath } from '../i18n/routes';
+import { DOCS_SHEETS } from '../site';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const r = ROLES.find((x) => x.k === id)!;
+---
+
+<Base lang={lang} route="role" id={id}>
+  <Hero h={t(r.h)} p={t(r.p)}>
+    <div slot="before" class="rtabs" role="navigation" aria-label={t({ fr: 'Rôles', en: 'Roles' })}>
+      {ROLES.map((x) => <a href={rolePath(lang, x.k)} class={x.k === r.k ? 'on' : ''} aria-current={x.k === r.k ? 'page' : undefined}>{t(x.n)}</a>)}
+    </div>
+    <div class="actions">
+      <a class="btn pri" href={path('demo', lang)}>{t({ fr: 'Demander une démo', en: 'Book a demo' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      <a class="btn" href={DOCS_SHEETS[lang]}>{t({ fr: 'Fiche pratique', en: 'Quick-reference sheet' })} · {t(r.n)}</a>
+    </div>
+  </Hero>
+  <section class="sec">
+    <div class="sec-h"><div class="kick">{t({ fr: 'Ce que vous y gagnez', en: 'What you get' })}</div></div>
+    <div class="rfeat">
+      {r.f.map((f) => (
+        <div class="card"><div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href={`#${r.ic}`}></use></svg></span><h3>{t(f[0])}</h3></div><p>{t(f[1])}</p></div>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <div class="sec-h"><div class="kick">{t({ fr: 'Votre parcours dans Synapse', en: 'Your workflow in Synapse' })}</div></div>
+    <ol class="rflow">{r.w.map((w, i) => <li><span>0{i + 1}</span><b>{t(w)}</b></li>)}</ol>
+  </section>
+  <section class="sec">
+    <div class="sec-2" style="align-items:stretch">
+      <div class="q">
+        <p>{t(r.q[0])}</p>
+        <div class="who"><span class="av">{initials(r.q[1])}</span><div><b>{r.q[1]}</b><small>{t(r.q[2])}</small></div></div>
+      </div>
+      <div class="side-card">
+        <h3>{t({ fr: 'Se former', en: 'Get trained' })}</h3>
+        <p>{t({ fr: 'Guides pas à pas, fiches imprimables et sessions de formation par rôle.', en: 'Step-by-step guides, printable sheets and role-based training sessions.' })}</p>
+        <div class="actions" style="justify-content:flex-start">
+          <a class="btn sm" href={docsUrl(lang)}>Documentation</a>
+          <a class="btn sm" href={DOCS_SHEETS[lang]}>{t({ fr: 'Fiches pratiques', en: 'Quick-reference sheets' })}</a>
+        </div>
+      </div>
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="cases" />
+</Base>

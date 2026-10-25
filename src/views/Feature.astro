@@ -1,0 +1,72 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { FEATURES } from '../data/features';
+import { ROLES } from '../data/roles';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { featurePath, path, rolePath } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+  id: string;
+}
+const { lang, id } = Astro.props;
+const t = (o: L) => tr(lang, o);
+const f = FEATURES.find((x) => x.k === id)!;
+const ld = [
+  {
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: t({ fr: 'Fonctionnalités', en: 'Features' }), item: 'https://synapse-medical.fr' + path('features', lang) },
+      { '@type': 'ListItem', position: 2, name: t(f.n) },
+    ],
+  },
+];
+---
+
+<Base lang={lang} route="feature" id={id} ld={ld}>
+  <Hero h={t(f.h)} p={t(f.p)}>
+    <div slot="before" class="crumbs"><a href={path('features', lang)}>{t({ fr: 'Fonctionnalités', en: 'Features' })}</a><span>/</span><span>{t(f.n)}</span></div>
+    <div class="actions">
+      <a class="btn pri" href={path('demo', lang)}>{t({ fr: 'Demander une démo', en: 'Book a demo' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      <a class="btn" href={path('tour', lang)}>{t({ fr: 'Visite guidée', en: 'Product tour' })}</a>
+    </div>
+  </Hero>
+  <section class="sec">
+    <div style="max-width:1000px;margin:0 auto"><div class="cover">{t({ fr: 'capture d’écran', en: 'screenshot' })} · {t(f.n)}</div></div>
+    <div class="rfeat">
+      {f.pts.map((p) => (
+        <div class="card"><div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href={`#${f.ic}`}></use></svg></span><h3>{t(p[0])}</h3></div><p>{t(p[1])}</p></div>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <div class="sec-2">
+      <div>
+        <h2 class="sub-h">{t({ fr: 'En détail', en: 'In detail' })}</h2>
+        <ul class="spec">{f.sp.map((s) => <li><svg class="i" aria-hidden="true"><use href="#i-check"></use></svg><span>{t(s)}</span></li>)}</ul>
+      </div>
+      <div class="side-card">
+        <h3>{t({ fr: 'Pour qui ?', en: 'Who is it for?' })}</h3>
+        <div class="pills">{f.roles.map((k) => <a class="pchip" href={rolePath(lang, k)}>{t(ROLES.find((r) => r.k === k)!.n)}</a>)}</div>
+        <p>{t({ fr: 'Le pas-à-pas complet est dans la documentation.', en: 'The full walkthrough is in the documentation.' })}</p>
+        <a class="btn sm" href={docsUrl(lang)} style="align-self:flex-start">Documentation ↗</a>
+      </div>
+    </div>
+  </section>
+  <section class="sec">
+    <h2 class="sub-h">{t({ fr: 'Autres fonctionnalités', en: 'Other features' })}</h2>
+    <div class="rfeat r3">
+      {FEATURES.filter((x) => x !== f).map((x) => (
+        <a class="card fcardx" href={featurePath(lang, x.k)}>
+          <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href={`#${x.ic}`}></use></svg></span><h3>{t(x.n)}</h3></div>
+          <p>{t(x.p)}</p>
+          <span class="more">{t({ fr: 'Découvrir', en: 'Learn more' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="tour" />
+</Base>

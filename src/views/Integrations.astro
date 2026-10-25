@@ -1,0 +1,55 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { INTEGRATION_STATUS, INTEGRATIONS } from '../data/features';
+import { tr, type L, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: L) => tr(lang, o);
+---
+
+<Base lang={lang} route="integrations">
+  <Hero
+    badge="API"
+    tag={t({ fr: 'Intégrations', en: 'Integrations' })}
+    h={t({ fr: 'Synapse s’intègre <em>à votre écosystème.</em>', en: 'Synapse fits <em>into your ecosystem.</em>' })}
+    p={t({ fr: 'API documentée, authentification unique et formats standard de la recherche clinique.', en: 'Documented API, single sign-on and clinical research standard formats.' })}
+  />
+  <section class="sec">
+    <div class="pillars">
+      {INTEGRATIONS.map((c) => (
+        <div class="card">
+          <h3>{t(c[0])}</h3>
+          <p>{t(c[1])}</p>
+          <div class="vis intl">
+            {c[2].map((i) => <span class={`ichip ${i[1]}`}><b>{t(i[0])}</b><small>{t(INTEGRATION_STATUS[i[1]])}</small></span>)}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <div class="sec-2" style="align-items:center">
+      <div>
+        <div class="kick">API</div>
+        <h2 class="sec-t" set:html={t({ fr: 'Une API pensée <em>pour les data managers.</em>', en: 'An API built <em>for data managers.</em>' })} />
+        <p style="color:var(--ink2);font-size:17px;margin-top:14px">{t({ fr: 'Jetons par étude et par rôle, journalisation dans l’audit trail, environnement UAT pour vos tests.', en: 'Tokens scoped per study and role, logged in the audit trail, UAT environment for your tests.' })}</p>
+        <div class="actions" style="justify-content:flex-start;margin-top:22px"><a class="btn" href={docsUrl(lang, '/architecture/overview/')}>{t({ fr: 'Documentation technique', en: 'Technical documentation' })} ↗</a></div>
+      </div>
+      <pre class="code" aria-label={t({ fr: 'Exemple d’appel API', en: 'API call example' })}><span class="c"># {t({ fr: 'Lister les patients d’un centre', en: 'List subjects for a site' })}</span>
+curl https://api.synapse-medical.fr/v1/studies/CARDIO-PROSP-24/subjects?site=LYON \
+  -H "Authorization: Bearer $SYNAPSE_TOKEN"
+
+<span class="c"># {t({ fr: 'Événements webhook', en: 'Webhook events' })}</span>
+subject.enrolled   form.signed
+query.opened       query.closed
+import.completed   study.locked</pre>
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="tour" />
+</Base>

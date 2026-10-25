@@ -1,0 +1,49 @@
+---
+import CtaBand from '../components/CtaBand.astro';
+import Hero from '../components/Hero.astro';
+import Base from '../layouts/Base.astro';
+import { FEATURES } from '../data/features';
+import { tr, type Lang } from '../i18n';
+import { featurePath, path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const t = (o: Parameters<typeof tr>[1]) => tr(lang, o);
+---
+
+<Base lang={lang} route="features">
+  <Hero
+    badge={t({ fr: 'Produit', en: 'Product' })}
+    tag={t({ fr: 'Fonctionnalités', en: 'Features' })}
+    h={t({ fr: 'Tout ce qu’il faut pour conduire <em>une étude clinique.</em>', en: 'Everything you need to run <em>a clinical study.</em>' })}
+    p={t({ fr: 'Conception, collecte, monitoring et export dans une seule plateforme conforme.', en: 'Design, collection, monitoring and export in one compliant platform.' })}
+  >
+    <div class="actions">
+      <a class="btn" href={path('tour', lang)}>{t({ fr: 'Faire la visite guidée', en: 'Take the product tour' })}</a>
+      <a class="btn pri" href={path('demo', lang)}>{t({ fr: 'Demander une démo', en: 'Book a demo' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+    </div>
+  </Hero>
+  <section class="sec">
+    <div class="rfeat">
+      {FEATURES.map((f) => (
+        <a class="card fcardx" href={featurePath(lang, f.k)}>
+          <div class="card-h"><span class="card-ic"><svg class="i" aria-hidden="true"><use href={`#${f.ic}`}></use></svg></span><h3>{t(f.n)}</h3></div>
+          <p>{t(f.p)}</p>
+          <span class="more">{t({ fr: 'Découvrir', en: 'Learn more' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+        </a>
+      ))}
+    </div>
+  </section>
+  <section class="sec dots">
+    <div class="cta">
+      <div>
+        <h2 set:html={t({ fr: 'Connecté à <em>vos outils.</em>', en: 'Connected to <em>your tools.</em>' })} />
+        <p>{t({ fr: 'API, SSO, laboratoires, exports statistiques.', en: 'API, SSO, labs, statistical exports.' })}</p>
+      </div>
+      <div class="actions"><a class="btn" href={path('integrations', lang)}>{t({ fr: 'Voir les intégrations', en: 'See integrations' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a></div>
+    </div>
+  </section>
+  <CtaBand lang={lang} variant="tour" />
+</Base>
