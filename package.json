@@ -1,0 +1,26 @@
+{
+  "name": "synapse-www",
+  "type": "module",
+  "private": true,
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "deploy:dev": "npm run build && sh scripts/deploy.sh dev",
+    "deploy:prod": "npm run build && sh scripts/deploy.sh prod"
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
+    "@fontsource-variable/jetbrains-mono": "^5.3.0",
+    "@fontsource-variable/newsreader": "^5.3.0",
+    "@fontsource-variable/nunito": "^5.3.0",
+    "astro": "^7.4.2",
+    "sharp": "^0.35.5"
+  },
+  "devDependencies": {
+    "wrangler": "4.151.3"
+  }
+}

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.synapse-medical.fr/sitemap-index.xml
