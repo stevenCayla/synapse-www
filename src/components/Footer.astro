@@ -1,0 +1,84 @@
+---
+import { tr, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+import { UI } from '../i18n/ui';
+import { DOCS_SHEETS } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const u = (k: keyof typeof UI) => tr(lang, UI[k]);
+---
+
+<footer class="foot">
+  <div class="foot-in">
+    <div class="f-grid">
+      <div class="about">
+        <a class="logo" href={path('home', lang)} aria-label="Synapse Medical">
+          <svg aria-hidden="true"><use href="#mark"></use></svg>
+          <span class="wm"><b>SYNAPSE</b><i>MEDICAL</i></span>
+        </a>
+        <p>{u('footAbout')}</p>
+      </div>
+      <div>
+        <h5>{u('product')}</h5>
+        <ul>
+          <li><a href={path('features', lang)}>{u('features')}</a></li>
+          <li><a href={path('integrations', lang)}>{u('integrations')}</a></li>
+          <li><a href={path('tour', lang)}>{u('tour')}</a></li>
+          <li><a href={path('pricing', lang)}>{u('pricing')}</a></li>
+          <li><a href={path('changelog', lang)}>{u('news')}</a></li>
+          <li><a href={path('soon', lang)}>{u('roadmap')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>{u('solutions')}</h5>
+        <ul>
+          <li><a href={path('role', lang, 'inv')}>{u('investigator')}</a></li>
+          <li><a href={path('role', lang, 'arc')}>{u('cra')}</a></li>
+          <li><a href={path('role', lang, 'dm')}>Data manager</a></li>
+          <li><a href={path('role', lang, 'sp')}>{u('sponsor')}</a></li>
+          <li><a href={path('cases', lang)}>{u('cases')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>{u('resources')}</h5>
+        <ul>
+          <li><a href={docsUrl(lang)}>Documentation</a></li>
+          <li><a href={path('glossary', lang)}>{u('glossary')}</a></li>
+          <li><a href={DOCS_SHEETS[lang]}>{u('sheets')}</a></li>
+          <li><a href={path('blog', lang)}>Blog</a></li>
+          <li><a href={path('status', lang)}>{u('status')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>{u('trust')}</h5>
+        <ul>
+          <li><a href={path('trust', lang)}>{u('trustCenter')}</a></li>
+          <li><a href={path('security', lang)}>{u('security')}</a></li>
+          <li><a href={path('disclosure', lang)}>{u('disclosure')}</a></li>
+          <li><a href={path('privacy', lang)}>{u('privacy')}</a></li>
+          <li><a href="#cookies" data-cookie-open>{u('cookiesManage')}</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>{u('company')}</h5>
+        <ul>
+          <li><a href={path('about', lang)}>{u('about')}</a></li>
+          <li><a href={path('careers', lang)}>{u('careers')}</a></li>
+          <li><a href={path('demo', lang)}>Contact</a></li>
+          <li><a href={path('legal', lang)}>{u('legal')}</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="f-bot">
+      <span>© 2026 Synapse Medical</span>
+      <span style="display:flex;gap:10px;flex-wrap:wrap">
+        <a class="hds" href={path('status', lang)} style="text-decoration:none"><span class="stt-ok" style="color:inherit">{u('allOk')}</span></a>
+        <span class="hds"><svg class="i" aria-hidden="true"><use href="#i-shield"></use></svg><span>{u('hds')}</span></span>
+      </span>
+    </div>
+  </div>
+</footer>

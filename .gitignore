@@ -7,3 +7,6 @@ dist/
 
 # Editor
 .idea/
+
+# DNS export (local only)
+/synapse-medical.fr.txt

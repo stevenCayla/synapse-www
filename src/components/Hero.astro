@@ -1,0 +1,23 @@
+---
+interface Props {
+  /** Pill shown above the title: bold badge + text. */
+  badge?: string;
+  tag?: string;
+  /** HTML of the title (the <em> part is highlighted). */
+  h: string;
+  /** HTML of the lede. */
+  p?: string;
+}
+const { badge, tag, h, p } = Astro.props;
+---
+
+<div class="hero-wrap pg-hero">
+  <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+  <div class="pg-hero-in">
+    <slot name="before" />
+    {badge && <span class="eyebrow"><b>{badge}</b><span>{tag}</span></span>}
+    <h1 set:html={h} />
+    {p && <p class="lede" set:html={p} />}
+    <slot />
+  </div>
+</div>

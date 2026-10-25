@@ -1,0 +1,50 @@
+---
+import { tr, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+  /** Wording and secondary button of the band. */
+  variant?: 'default' | 'cases' | 'tour';
+  /** Add the dotted background (used when the band follows a white section). */
+  dots?: boolean;
+}
+const { lang, variant = 'default', dots = false } = Astro.props;
+
+const text = {
+  default: {
+    h: { fr: 'Prêt à lancer votre <em>prochaine étude</em> ?', en: 'Ready to launch your <em>next study</em>?' },
+    p: { fr: 'Échangez 30 minutes avec notre équipe pour voir Synapse appliqué à votre protocole.', en: 'Spend 30 minutes with our team to see Synapse applied to your protocol.' },
+    btn: { fr: 'Explorer la documentation', en: 'Explore the documentation' },
+    href: docsUrl(lang),
+  },
+  cases: {
+    h: { fr: 'Voyons Synapse <em>sur votre protocole.</em>', en: 'Let’s see Synapse <em>on your protocol.</em>' },
+    p: { fr: '30 minutes avec un chef de projet clinique. Réponse sous un jour ouvré.', en: '30 minutes with a clinical project lead. Reply within one business day.' },
+    btn: { fr: 'Voir les études de cas', en: 'See case studies' },
+    href: path('cases', lang),
+  },
+  tour: {
+    h: { fr: 'Voyons Synapse <em>sur votre protocole.</em>', en: 'Let’s see Synapse <em>on your protocol.</em>' },
+    p: { fr: '30 minutes avec un chef de projet clinique, ou une visite guidée en autonomie.', en: '30 minutes with a clinical project lead, or a self-guided tour.' },
+    btn: { fr: 'Visite guidée', en: 'Product tour' },
+    href: path('tour', lang),
+  },
+}[variant];
+---
+
+<section class={`sec${dots ? ' dots' : ''}`}>
+  <div class="cta">
+    <div>
+      <h2 set:html={tr(lang, text.h)} />
+      <p>{tr(lang, text.p)}</p>
+    </div>
+    <div class="actions">
+      <a class="btn" href={text.href}>{tr(lang, text.btn)}</a>
+      <a class="btn pri" href={path('demo', lang)}>
+        {tr(lang, { fr: 'Demander une démo', en: 'Book a demo' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg>
+      </a>
+    </div>
+  </div>
+</section>

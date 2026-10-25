@@ -1,0 +1,18 @@
+---
+import { tr, type L, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  items: [L, L][];
+}
+const { lang, items } = Astro.props;
+---
+
+<div class="faq">
+  {items.map((q, i) => (
+    <details open={i === 0}>
+      <summary>{tr(lang, q[0])}</summary>
+      <p>{tr(lang, q[1])}</p>
+    </details>
+  ))}
+</div>

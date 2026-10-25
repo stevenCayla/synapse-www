@@ -55,6 +55,9 @@ jobs:
 
       - run: npm ci
 
+      - name: Type check
+        run: npm run check
+
       - run: npm run build
 
       - name: Upload build

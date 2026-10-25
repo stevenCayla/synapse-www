@@ -1,0 +1,24 @@
+---
+import { tr, type Lang } from '../i18n';
+import { UI } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+---
+
+<div class="s-scrim" id="s-scrim" data-index={`/search-${lang}.json`}>
+  <div class="s-modal" role="dialog" aria-modal="true" aria-label={tr(lang, UI.search)}>
+    <div class="s-in">
+      <svg class="i" style="width:18px;height:18px;color:var(--ink3)" aria-hidden="true"><use href="#i-search"></use></svg>
+      <input id="s-q" autocomplete="off" placeholder={tr(lang, UI.sPlaceholder)} aria-label={tr(lang, UI.search)} />
+      <kbd>{tr(lang, UI.sEsc)}</kbd>
+    </div>
+    <div class="s-res" id="s-res"></div>
+    <div class="s-foot">
+      <span><kbd>↑</kbd> <kbd>↓</kbd> {tr(lang, UI.sNav)}</span>
+      <span><kbd>↵</kbd> {tr(lang, UI.sOpen)}</span>
+    </div>
+  </div>
+</div>

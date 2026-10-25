@@ -1,0 +1,22 @@
+---
+import { tr, type Lang } from '../i18n';
+import type { Post } from '../data/posts';
+import { postPath } from '../i18n/routes';
+
+interface Props {
+  lang: Lang;
+  post: Post;
+  wide?: boolean;
+}
+const { lang, post, wide = false } = Astro.props;
+---
+
+<a class={`post${wide ? ' wide' : ''}`} href={postPath(lang, post.id)}>
+  <div class="ph">{tr(lang, { fr: 'image d’illustration', en: 'cover image' })}</div>
+  <div class="bd">
+    <div class="meta"><b>{tr(lang, post.cat)}</b><span>{tr(lang, post.date)} · {post.min} min</span></div>
+    <h3>{tr(lang, post.t)}</h3>
+    <p>{tr(lang, post.x)}</p>
+    <span class="more">{tr(lang, { fr: 'Lire l’article', en: 'Read article' })}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></span>
+  </div>
+</a>

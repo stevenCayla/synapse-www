@@ -1,0 +1,32 @@
+---
+import { tr, type Lang } from '../i18n';
+import { path } from '../i18n/routes';
+import { UI } from '../i18n/ui';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const u = (k: keyof typeof UI) => tr(lang, UI[k]);
+---
+
+<div class="cookie" id="cookie" role="dialog" aria-label="Cookies" hidden>
+  <b>{u('ckTitle')}</b>
+  <p>{u('ckText')} <a href={path('privacy', lang)}>{u('ckMore')}</a></p>
+  <div class="ck-prefs" id="ck-prefs" hidden>
+    <div class="ck-row">
+      <div><span>{u('ckNecessary')}</span><small>{u('ckNecessaryD')}</small></div>
+      <label class="tg"><input type="checkbox" checked disabled aria-label={u('ckNecessary')} /><span></span></label>
+    </div>
+    <div class="ck-row">
+      <div><span>{u('ckAnalytics')}</span><small>{u('ckAnalyticsD')}</small></div>
+      <label class="tg"><input type="checkbox" id="ck-a" aria-label={u('ckAnalytics')} /><span></span></label>
+    </div>
+    <button class="btn sm pri" type="button" data-ck="save">{u('ckSave')}</button>
+  </div>
+  <div class="ck-btns">
+    <button class="btn" type="button" data-ck="no">{u('ckNo')}</button>
+    <button class="btn" type="button" data-ck="yes">{u('ckYes')}</button>
+    <button class="btn sm wide" type="button" data-ck="custom">{u('ckCustom')}</button>
+  </div>
+</div>

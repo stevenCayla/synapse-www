@@ -1,0 +1,61 @@
+---
+import { tr, type Lang } from '../i18n';
+import { docsUrl } from '../i18n/docs';
+import { path, type RouteKey } from '../i18n/routes';
+import { UI } from '../i18n/ui';
+import { APP_LOGIN } from '../site';
+
+interface Props {
+  lang: Lang;
+  route: RouteKey | 'nf';
+  altHref: string;
+}
+const { lang, route, altHref } = Astro.props;
+
+const nav: { label: string; href: string; keys: RouteKey[] }[] = [
+  { label: tr(lang, UI.features), href: path('features', lang), keys: ['features', 'feature'] },
+  { label: tr(lang, UI.solutions), href: path('role', lang, 'inv'), keys: ['role'] },
+  { label: tr(lang, UI.pricing), href: path('pricing', lang), keys: ['pricing'] },
+  { label: tr(lang, UI.cases), href: path('cases', lang), keys: ['cases', 'case'] },
+  { label: UI.blog, href: path('blog', lang), keys: ['blog', 'post'] },
+  { label: UI.docs, href: docsUrl(lang), keys: [] },
+];
+const home = path('home', lang);
+const demo = path('demo', lang);
+---
+
+<header class="hdr">
+  <a class="logo" href={home} aria-label="Synapse Medical">
+    <svg aria-hidden="true"><use href="#mark"></use></svg>
+    <span class="wm"><b>SYNAPSE</b><i>MEDICAL</i></span>
+  </a>
+  <nav class="tabs" aria-label="Navigation">
+    {nav.map((n) => <a href={n.href} class={n.keys.includes(route as RouteKey) ? 'on' : ''} aria-current={n.keys.includes(route as RouteKey) ? 'page' : undefined}>{n.label}</a>)}
+  </nav>
+  <span class="sp"></span>
+  <button class="search" type="button" data-search aria-label={tr(lang, UI.search)}>
+    <svg class="i" aria-hidden="true"><use href="#i-search"></use></svg>
+    <span>{tr(lang, UI.search)}</span>
+    <kbd>Ctrl K</kbd>
+  </button>
+  <div class="lang" role="group" aria-label="Langue / Language">
+    <a href={lang === 'fr' ? undefined : altHref} hreflang="fr" lang="fr" class={lang === 'fr' ? 'on' : ''} aria-current={lang === 'fr' ? 'true' : undefined}>FR</a>
+    <a href={lang === 'en' ? undefined : altHref} hreflang="en" lang="en" class={lang === 'en' ? 'on' : ''} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+  </div>
+  <button class="ibtn" id="theme" type="button" aria-label={tr(lang, UI.theme)}>
+    <svg class="i" aria-hidden="true"><use href="#i-moon"></use></svg>
+  </button>
+  <span class="hsep"></span>
+  <a class="btn sm" href={APP_LOGIN}>{tr(lang, UI.login)}</a>
+  <a class="btn sm pri demo" href={demo}>{tr(lang, UI.demo)}</a>
+  <button class="ibtn burger" id="burger" type="button" aria-label={tr(lang, UI.menu)} aria-expanded="false" aria-controls="mnav">
+    <svg class="i" aria-hidden="true"><use href="#i-menu"></use></svg>
+  </button>
+</header>
+<nav class="mnav" id="mnav" aria-label="Menu">
+  {nav.map((n) => <a href={n.href} class={n.keys.includes(route as RouteKey) ? 'on' : ''}>{n.label}</a>)}
+  <div class="row">
+    <a class="btn" href={APP_LOGIN}>{tr(lang, UI.login)}</a>
+    <a class="btn pri" href={demo}>{tr(lang, UI.demo)}</a>
+  </div>
+</nav>
