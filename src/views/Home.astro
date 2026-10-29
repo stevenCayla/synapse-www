@@ -1,6 +1,6 @@
 ---
 import Minimal from '../layouts/Minimal.astro';
-import { docs, type Lang } from '../i18n';
+import { demoPath, docs, type Lang } from '../i18n';
 import { DOCS } from '../site';
 
 interface Props {
@@ -30,6 +30,7 @@ const fr = lang === 'fr';
       </p>
       <div class="actions" style="margin-top:28px">
         <a class="btn pri" href={docs(lang, DOCS)}><span>{fr ? 'Consulter la documentation' : 'Read the documentation'}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <a class="btn" href={demoPath(lang)}>{fr ? 'Demander une démo' : 'Request a demo'}</a>
       </div>
     </div>
   </div>
