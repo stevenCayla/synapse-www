@@ -5,6 +5,7 @@ import { $, $$ } from './dom';
 interface Turnstile {
   render(el: string | HTMLElement, options: Record<string, unknown>): string;
   reset(id?: string): void;
+  remove(id?: string): void;
 }
 declare global {
   interface Window {
@@ -18,8 +19,19 @@ if (form) {
   const L = (a: string, b: string) => (fr ? a : b);
   const send = $<HTMLButtonElement>('#demo-send')!;
   const status = $('#demo-status')!;
+  const check = $('#demo-check')!;
   let token = '';
   let widget = '';
+  let siteKey = '';
+
+  const checkState = (state: 'pending' | 'ok' | 'error') => {
+    check.dataset.state = state;
+    check.querySelector('span')!.textContent = {
+      pending: L('Vérification anti-robot en cours…', 'Robot check in progress…'),
+      ok: L('Vérification anti-robot réussie', 'Robot check passed'),
+      error: L('La vérification anti-robot a échoué. Rechargez la page ou écrivez-nous à demo@synapse-medical.fr.', 'The robot check failed. Reload the page or write to us at demo@synapse-medical.fr.'),
+    }[state];
+  };
 
   const say = (msg: string, alert = false) => {
     status.textContent = msg;
@@ -29,10 +41,40 @@ if (form) {
   const refused = () =>
     say(L('Votre demande n’a pas pu être envoyée. Vérifiez les champs et la vérification anti-robot, ou écrivez-nous à demo@synapse-medical.fr.', 'Your request could not be sent. Check the fields and the robot check, or write to us at demo@synapse-medical.fr.'), true);
 
+  // The widget follows the theme of the site (not only the system one); it is shown only when the visitor must act.
+  const render = () => {
+    token = '';
+    send.disabled = true;
+    checkState('pending');
+    widget = window.turnstile!.render('#demo-turnstile', {
+      sitekey: siteKey,
+      language: fr ? 'fr' : 'en',
+      theme: document.documentElement.dataset.theme === 'dark' ? 'dark' : 'light',
+      size: 'flexible',
+      appearance: 'interaction-only',
+      callback: (t: string) => {
+        token = t;
+        send.disabled = false;
+        checkState('ok');
+      },
+      'expired-callback': () => {
+        token = '';
+        send.disabled = true;
+        checkState('pending');
+        window.turnstile?.reset(widget);
+      },
+      'error-callback': () => {
+        token = '';
+        send.disabled = true;
+        checkState('error');
+      },
+    });
+  };
+
   // Turnstile widget: the site key comes from the Worker (one place to configure it per environment).
   const mount = async () => {
     try {
-      const { siteKey } = (await (await fetch('/api/demo/config')).json()) as { siteKey?: string };
+      siteKey = ((await (await fetch('/api/demo/config')).json()) as { siteKey?: string }).siteKey ?? '';
       if (!siteKey) throw new Error('no site key');
       await new Promise<void>((ok, ko) => {
         const s = document.createElement('script');
@@ -42,24 +84,13 @@ if (form) {
         s.onerror = () => ko(new Error('turnstile'));
         document.head.append(s);
       });
-      widget = window.turnstile!.render('#demo-turnstile', {
-        sitekey: siteKey,
-        language: fr ? 'fr' : 'en',
-        theme: 'auto',
-        callback: (t: string) => {
-          token = t;
-          send.disabled = false;
-        },
-        'expired-callback': () => {
-          token = '';
-          send.disabled = true;
-        },
-        'error-callback': () => {
-          token = '';
-          send.disabled = true;
-        },
-      });
+      render();
+      new MutationObserver(() => {
+        window.turnstile?.remove(widget);
+        render();
+      }).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
     } catch {
+      checkState('error');
       refused();
     }
   };
@@ -106,6 +137,7 @@ if (form) {
     } catch {
       refused();
       token = '';
+      checkState('pending');
       if (widget) window.turnstile?.reset(widget);
     } finally {
       form.removeAttribute('aria-busy');
