@@ -1,0 +1,59 @@
+---
+import Minimal from '../layouts/Minimal.astro';
+import { docs, home, LANGS } from '../i18n';
+import { DOCS } from '../site';
+
+// One page for both languages (as in the documentation): Cloudflare serves it for any unknown
+// address, and the script below shows the language matching the requested path.
+const text = {
+  fr: {
+    title: 'Cette page s’est égarée <em>en cours d’étude.</em>',
+    text: 'Elle a peut-être été déplacée ou renommée. Ces liens devraient vous remettre sur la bonne voie.',
+    home: 'Retour à l’accueil',
+    docs: 'Documentation',
+  },
+  en: {
+    title: 'This page got lost <em>mid-study.</em>',
+    text: 'It may have been moved or renamed. These links should get you back on track.',
+    home: 'Back to home',
+    docs: 'Documentation',
+  },
+};
+---
+
+<Minimal title="Page introuvable — Synapse Medical" description="Cette page n’existe pas ou a été déplacée." noindex>
+  <div class="hero-wrap pg-hero" style="min-height:calc(100vh - 1px)">
+    <div class="bg-anim" aria-hidden="true"><canvas class="net"></canvas></div>
+    {LANGS.map((lang) => (
+      <div class="pg-hero-in" style="padding-top:170px;padding-bottom:120px" lang={lang} data-lang={lang} hidden={lang === 'en'}>
+        <p class="nf-c">404</p>
+        <h1 set:html={text[lang].title} />
+        <code class="nf-path" hidden></code>
+        <p class="lede" style="margin-top:18px">{text[lang].text}</p>
+        <div class="actions">
+          <a class="btn pri" href={home(lang)}>{text[lang].home}<svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+          <a class="btn" href={docs(lang, DOCS)}>{text[lang].docs}</a>
+        </div>
+      </div>
+    ))}
+  </div>
+  <script>
+    const en = location.pathname === '/en' || location.pathname.startsWith('/en/');
+    const lang = en ? 'en' : 'fr';
+    document.documentElement.lang = lang;
+    document.title = en ? 'Page not found — Synapse Medical' : document.title;
+    document.querySelector('meta[name="description"]')?.setAttribute('content', en ? 'This page does not exist or has been moved.' : 'Cette page n’existe pas ou a été déplacée.');
+    document.querySelectorAll<HTMLElement>('[data-lang]').forEach((el) => {
+      el.hidden = el.dataset.lang !== lang;
+      const path = el.querySelector<HTMLElement>('.nf-path');
+      if (path && !el.hidden) {
+        path.textContent = location.pathname;
+        path.hidden = false;
+      }
+    });
+    const theme = document.getElementById('theme');
+    if (theme && en) theme.setAttribute('aria-label', 'Toggle theme');
+    const docsLink = document.querySelector<HTMLAnchorElement>('.cs-foot a');
+    if (docsLink && en) docsLink.href = docsLink.href.replace(/\/$/, '/en/');
+  </script>
+</Minimal>

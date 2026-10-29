@@ -1,52 +1,6 @@
-/* Synapse docs design tokens (light + dark), mapped onto the Starlight variables. */
 @import '@fontsource-variable/nunito';
 @import '@fontsource-variable/newsreader';
 @import '@fontsource-variable/jetbrains-mono';
 
-:root {
-  --sy-accent: #4f46e5;
-  --sy-accent-ink: #4338ca;
-  --sy-accent-soft: #eeedfd;
-  --sy-tint: #f4f3fe;
-  --sy-bg: #fff;
-  --sy-bg2: #f8f8fd;
-  --sy-bg3: #f0f0f8;
-  --sy-line: #e4e4f0;
-  --sy-line2: #d2d2e4;
-  --sy-ink: #1e1b3a;
-  --sy-ink2: #45436a;
-  --sy-ink3: #6a6890;
-  --sy-ok: #0a6b49;
-  --sy-ok-soft: #e7f6ef;
-  --sy-code: #f7f7fc;
-  --sy-danger: #c2283b;
-  --sy-danger-soft: #fdecee;
-  --sy-warn: #8a4f00;
-  --sy-warn-soft: #fff4e0;
-  --sy-font-display: 'Newsreader Variable', Georgia, serif;
-  --sy-font-mono: 'JetBrains Mono Variable', ui-monospace, monospace;
-
-}
-
-:root[data-theme='dark'] {
-  --sy-accent: #818cf8;
-  --sy-accent-ink: #a5b4fc;
-  --sy-accent-soft: #1e1c44;
-  --sy-tint: #0f1124;
-  --sy-bg: #0b0f1a;
-  --sy-bg2: #10142a;
-  --sy-bg3: #171b33;
-  --sy-line: #232846;
-  --sy-line2: #2f355a;
-  --sy-ink: #ecedfa;
-  --sy-ink2: #b3b6d6;
-  --sy-ink3: #868ab0;
-  --sy-ok: #4fd1a0;
-  --sy-ok-soft: #10261f;
-  --sy-code: #0f1326;
-  --sy-danger: #ff7a8a;
-  --sy-danger-soft: #2c1418;
-  --sy-warn: #f5b454;
-  --sy-warn-soft: #2a2010;
-
-}
+:root{--accent:#4F46E5;--accent-ink:#4338CA;--accent-soft:#EEEDFD;--tint:#F4F3FE;--bg:#fff;--bg2:#F8F8FD;--bg3:#F0F0F8;--line:#E4E4F0;--line2:#D2D2E4;--ink:#1E1B3A;--ink2:#45436A;--ink3:#6A6890;--ok:#0F8A5F;--ok-soft:#E7F6EF;--warn:#A15C00;--warn-soft:#FFF4E0;--danger:#C2283B;--danger-soft:#FDECEE;--shadow:rgba(30,20,80,.18);--serif:'Newsreader Variable',Georgia,serif;--mono:'JetBrains Mono Variable',ui-monospace,monospace;--frame:min(1180px,100vw);--gl:color-mix(in oklab,var(--accent) 11%,transparent)}
+[data-theme="dark"]{--accent:#818CF8;--accent-ink:#A5B4FC;--accent-soft:#1E1C44;--tint:#0F1124;--bg:#0B0F1A;--bg2:#10142A;--bg3:#171B33;--line:#232846;--line2:#2F355A;--ink:#ECEDFA;--ink2:#B3B6D6;--ink3:#868AB0;--ok:#4FD1A0;--ok-soft:#10261F;--warn:#F5B454;--warn-soft:#2A2010;--danger:#FF7A8A;--danger-soft:#2C1418;--shadow:rgba(0,0,0,.5)}

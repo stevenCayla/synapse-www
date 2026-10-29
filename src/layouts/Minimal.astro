@@ -1,0 +1,79 @@
+---
+import '../styles/tokens.css';
+import '../styles/base.css';
+import '../styles/pages.css';
+import Sprite from '../components/Sprite.astro';
+import { docs, home, UI, type Lang } from '../i18n';
+import { DOCS, SITE } from '../site';
+
+interface Props {
+  lang?: Lang;
+  title: string;
+  description: string;
+  /** Serves the home pages: canonical URL, hreflang alternates and the language switch. The 404 page has none. */
+  localized?: boolean;
+  noindex?: boolean;
+}
+const { lang = 'fr', title, description, localized = false, noindex = false } = Astro.props;
+const canonical = localized ? home(lang) : undefined;
+const ui = UI[lang];
+const ogImage = `${SITE}/og-image.png`;
+---
+
+<!doctype html>
+<html lang={lang} data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="color-scheme" content="light dark" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {canonical !== undefined && <link rel="canonical" href={SITE + canonical} />}
+    {localized && <link rel="alternate" hreflang="fr" href={SITE + home('fr')} />}
+    {localized && <link rel="alternate" hreflang="en" href={SITE + home('en')} />}
+    {localized && <link rel="alternate" hreflang="x-default" href={SITE + home('fr')} />}
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Synapse Medical" />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:locale" content={lang === 'en' ? 'en_GB' : 'fr_FR'} />
+    {canonical !== undefined && <meta property="og:url" content={SITE + canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:image" content={ogImage} />
+    <script is:inline src="/theme.js"></script>
+  </head>
+  <body class="is-home">
+    <Sprite />
+    <header class="hdr">
+      <a class="logo" href={home(lang)} aria-label="Synapse Medical">
+        <svg aria-hidden="true"><use href="#mark"></use></svg>
+        <span class="wm"><b>SYNAPSE</b><i>MEDICAL</i></span>
+      </a>
+      <span class="sp"></span>
+      <div class="lang" role="group" aria-label={ui.lang} style={localized ? undefined : "display:none"}>
+        <a href={lang === 'fr' ? undefined : home('fr')} hreflang="fr" lang="fr" class={lang === 'fr' ? 'on' : ''} aria-current={lang === 'fr' ? 'true' : undefined}>FR</a>
+        <a href={lang === 'en' ? undefined : home('en')} hreflang="en" lang="en" class={lang === 'en' ? 'on' : ''} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+      </div>
+      <button class="ibtn" id="theme" type="button" aria-label={ui.theme}>
+        <svg class="i" aria-hidden="true"><use href="#i-moon"></use></svg>
+      </button>
+    </header>
+    <main id="main" class="page on">
+      <slot />
+    </main>
+    <footer class="cs-foot">
+      <span>© {new Date().getFullYear()} Synapse Medical</span>
+      <nav aria-label={ui.links}><a href={docs(lang, DOCS)}>{ui.docs}</a></nav>
+    </footer>
+    <script>
+      import '../scripts/theme';
+      import '../scripts/net';
+    </script>
+  </body>
+</html>

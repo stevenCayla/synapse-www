@@ -1,0 +1,36 @@
+---
+import Minimal from '../layouts/Minimal.astro';
+import { docs, type Lang } from '../i18n';
+import { DOCS } from '../site';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const fr = lang === 'fr';
+---
+
+<Minimal
+  lang={lang}
+  localized
+  title={fr ? 'Synapse Medical — Bientôt disponible' : 'Synapse Medical — Coming soon'}
+  description={fr
+    ? 'Synapse Medical, la solution EDC de bout en bout pour vos études cliniques. Le site arrive bientôt.'
+    : 'Synapse Medical, the end-to-end EDC solution for your clinical studies. The website is coming soon.'}
+>
+  <div class="cs hero-wrap" style="min-height:calc(100dvh - 54px)">
+    <div class="bg-anim" aria-hidden="true" style="z-index:0"><canvas class="net"></canvas></div>
+    <div class="cs-in">
+      <div class="cs-mark"><svg aria-hidden="true"><use href="#mark"></use></svg></div>
+      <span class="eyebrow"><b>Synapse Medical</b><span>{fr ? 'EDC pour la recherche clinique' : 'EDC for clinical research'}</span></span>
+      {fr ? <h1>Bientôt <em>disponible.</em></h1> : <h1>Coming <em>soon.</em></h1>}
+      <p class="lede">
+        {fr ? 'Données cliniques. Précision scientifique.' : 'Clinical data. Scientific precision.'}<br />
+        {fr ? 'Notre site arrive bientôt.' : 'Our website is coming soon.'}
+      </p>
+      <div class="actions" style="margin-top:28px">
+        <a class="btn pri" href={docs(lang, DOCS)}><span>{fr ? 'Consulter la documentation' : 'Read the documentation'}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+      </div>
+    </div>
+  </div>
+</Minimal>
