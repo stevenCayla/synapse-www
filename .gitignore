@@ -7,3 +7,7 @@ dist/
 
 # Editor
 .idea/
+
+# Local secrets and settings (wrangler dev)
+.dev.vars
+.env

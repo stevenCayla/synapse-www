@@ -6,15 +6,36 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "synapse-www",
   "compatibility_date": "2026-09-01",
+  // worker-mailer opens the SMTP connection with the node:* compatibility layer.
+  "compatibility_flags": ["nodejs_compat"],
+  // The Worker only handles /api/*: every other request is served by the static assets
+  // (and unknown addresses by the 404 page).
+  "main": "worker/index.ts",
   "assets": {
     "directory": "./dist",
-    "not_found_handling": "404-page"
+    "not_found_handling": "404-page",
+    "run_worker_first": ["/api/*"]
+  },
+  // Public settings. Secrets (TURNSTILE_SECRET_KEY, SMTP_USERNAME, SMTP_TOKEN) are never
+  // written here: see README.md. Variables are not inherited by "env.dev".
+  "vars": {
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFrTwI2L2K6mOd4c",
+    "DEMO_RECIPIENT": "demo@synapse-medical.fr",
+    "DEMO_SENDER": "demo@synapse-medical.fr",
+    "DEMO_SEND": "smtp"
   },
   "workers_dev": false,
   "preview_urls": false,
   "routes": [{ "pattern": "synapse-medical.fr", "custom_domain": true }],
   "env": {
     "dev": {
+      "vars": {
+        "TURNSTILE_SITE_KEY": "0x4AAAAAAFrTwI2L2K6mOd4c",
+        "DEMO_RECIPIENT": "demo@synapse-medical.fr",
+        "DEMO_SENDER": "demo@synapse-medical.fr",
+        // No real e-mail from dev-www until the Proton settings are checked.
+        "DEMO_SEND": "dry-run"
+      },
       "routes": [{ "pattern": "dev-www.synapse-medical.fr", "custom_domain": true }]
     }
   }
