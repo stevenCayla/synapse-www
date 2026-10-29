@@ -1,0 +1,24 @@
+name: Bug
+description: Something does not work on the website
+labels: [bug]
+body:
+  - type: input
+    id: page
+    attributes:
+      label: Page
+      description: Address of the page concerned
+      placeholder: https://synapse-medical.fr/demo/
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens
+      description: What you did, what you expected, what you got
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and device
+      placeholder: Firefox 130, macOS
