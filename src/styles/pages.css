@@ -306,3 +306,18 @@ html,body{overflow-x:clip}
 .hp{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
 .demo-status{grid-column:1/-1;margin:0;font-size:14px;color:var(--ink2);min-height:1.4em}
 .demo-status[role=alert]{color:var(--danger);font-weight:600}
+/* Turnstile: full width, shown only when a challenge is needed; a status line otherwise */
+.ts{gap:10px}
+#demo-turnstile{width:100%;min-height:0}
+#demo-turnstile iframe{width:100%!important;border-radius:10px}
+.ts-note{display:flex;align-items:center;gap:8px;margin:0;font:600 13px var(--mono);color:var(--ink3)}
+.ts-note .i{width:16px;height:16px;flex:none;stroke:currentColor;opacity:0}
+.ts-note[data-state=pending]::before{content:"";width:14px;height:14px;flex:none;border-radius:50%;border:2px solid var(--line2);border-top-color:var(--accent);animation:tsSpin .8s linear infinite}
+.ts-note[data-state=ok]{color:var(--ok)}.ts-note[data-state=ok] .i{opacity:1}
+.ts-note[data-state=error]{color:var(--danger)}
+@keyframes tsSpin{to{transform:rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){.ts-note[data-state=pending]::before{animation:none}}
+/* Back link above the page title */
+.back{display:inline-flex;align-items:center;gap:8px;margin-bottom:22px;padding:6px 12px 6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--ink2);font-weight:700;font-size:13.5px}
+.back .i{width:16px;height:16px;transform:rotate(180deg)}
+.back:hover{text-decoration:none;color:var(--ink);border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
