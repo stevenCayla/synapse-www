@@ -1,0 +1,8 @@
+# Copy to .dev.vars (ignored by git) for "npm run dev:worker".
+# Cloudflare Turnstile test keys: the challenge always passes.
+TURNSTILE_SITE_KEY=1x00000000000000000000AA
+TURNSTILE_SECRET_KEY=1x0000000000000000000000000000000AA
+# Simulated sending: nothing is e-mailed. Use "smtp" with real SMTP_* values to send.
+DEMO_SEND=dry-run
+# SMTP_USERNAME=
+# SMTP_TOKEN=

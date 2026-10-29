@@ -1,6 +1,6 @@
 ---
 import Minimal from '../layouts/Minimal.astro';
-import { docs, type Lang } from '../i18n';
+import { demoPath, docs, type Lang } from '../i18n';
 import { DOCS } from '../site';
 
 interface Props {
@@ -21,7 +21,7 @@ const fr = lang === 'fr';
   <div class="cs hero-wrap" style="min-height:calc(100dvh - 54px)">
     <div class="bg-anim" aria-hidden="true" style="z-index:0"><canvas class="net"></canvas></div>
     <div class="cs-in">
-      <div class="cs-mark"><svg aria-hidden="true"><use href="#mark"></use></svg></div>
+      <div class="cs-mark" aria-hidden="true"><span class="ring"></span><span class="ring"></span><span class="ring"></span><span class="tile"><svg><use href="#mark"></use></svg></span></div>
       <span class="eyebrow"><b>Synapse Medical</b><span>{fr ? 'EDC pour la recherche clinique' : 'EDC for clinical research'}</span></span>
       {fr ? <h1>Bientôt <em>disponible.</em></h1> : <h1>Coming <em>soon.</em></h1>}
       <p class="lede">
@@ -30,6 +30,7 @@ const fr = lang === 'fr';
       </p>
       <div class="actions" style="margin-top:28px">
         <a class="btn pri" href={docs(lang, DOCS)}><span>{fr ? 'Consulter la documentation' : 'Read the documentation'}</span><svg class="i" aria-hidden="true"><use href="#i-arrow"></use></svg></a>
+        <a class="btn" href={demoPath(lang)}>{fr ? 'Demander une démo' : 'Request a demo'}</a>
       </div>
     </div>
   </div>

@@ -12,10 +12,13 @@ interface Props {
   description: string;
   /** Serves the home pages: canonical URL, hreflang alternates and the language switch. The 404 page has none. */
   localized?: boolean;
+  /** Path of the page in each language (defaults to the home pages). */
+  paths?: Record<Lang, string>;
   noindex?: boolean;
 }
 const { lang = 'fr', title, description, localized = false, noindex = false } = Astro.props;
-const canonical = localized ? home(lang) : undefined;
+const paths = Astro.props.paths ?? { fr: home('fr'), en: home('en') };
+const canonical = localized ? paths[lang] : undefined;
 const ui = UI[lang];
 const ogImage = `${SITE}/og-image.png`;
 ---
@@ -30,9 +33,9 @@ const ogImage = `${SITE}/og-image.png`;
     <meta name="color-scheme" content="light dark" />
     {noindex && <meta name="robots" content="noindex" />}
     {canonical !== undefined && <link rel="canonical" href={SITE + canonical} />}
-    {localized && <link rel="alternate" hreflang="fr" href={SITE + home('fr')} />}
-    {localized && <link rel="alternate" hreflang="en" href={SITE + home('en')} />}
-    {localized && <link rel="alternate" hreflang="x-default" href={SITE + home('fr')} />}
+    {localized && <link rel="alternate" hreflang="fr" href={SITE + paths.fr} />}
+    {localized && <link rel="alternate" hreflang="en" href={SITE + paths.en} />}
+    {localized && <link rel="alternate" hreflang="x-default" href={SITE + paths.fr} />}
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Synapse Medical" />
@@ -57,8 +60,8 @@ const ogImage = `${SITE}/og-image.png`;
       </a>
       <span class="sp"></span>
       <div class="lang" role="group" aria-label={ui.lang} style={localized ? undefined : "display:none"}>
-        <a href={lang === 'fr' ? undefined : home('fr')} hreflang="fr" lang="fr" class={lang === 'fr' ? 'on' : ''} aria-current={lang === 'fr' ? 'true' : undefined}>FR</a>
-        <a href={lang === 'en' ? undefined : home('en')} hreflang="en" lang="en" class={lang === 'en' ? 'on' : ''} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
+        <a href={lang === 'fr' ? undefined : paths.fr} hreflang="fr" lang="fr" class={lang === 'fr' ? 'on' : ''} aria-current={lang === 'fr' ? 'true' : undefined}>FR</a>
+        <a href={lang === 'en' ? undefined : paths.en} hreflang="en" lang="en" class={lang === 'en' ? 'on' : ''} aria-current={lang === 'en' ? 'true' : undefined}>EN</a>
       </div>
       <button class="ibtn" id="theme" type="button" aria-label={ui.theme}>
         <svg class="i" aria-hidden="true"><use href="#i-moon"></use></svg>

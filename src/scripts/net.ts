@@ -94,6 +94,8 @@ const initNet = (c: HTMLCanvasElement) => {
 };
 
 function render(b: HTMLElement) {
+  // The CSS animations (logo waves) follow the same pause.
+  document.documentElement.toggleAttribute('data-paused', state.paused);
   b.setAttribute('aria-pressed', String(state.paused));
   b.innerHTML = `<svg class="i" aria-hidden="true"><use href="#${state.paused ? 'i-play' : 'i-pause'}"></use></svg><span>${
     state.paused ? L('Reprendre l’animation', 'Resume animation') : L('Mettre en pause l’animation', 'Pause animation')

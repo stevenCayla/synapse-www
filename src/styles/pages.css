@@ -296,3 +296,13 @@ html,body{overflow-x:clip}
 .doc-r>div{min-width:0}
 @media (max-width:600px){.doc-r{flex-wrap:wrap}.doc-r .btn{margin-left:0}.stt-ch{flex-wrap:wrap}.stt-grid aside{position:static!important}}
 @media (max-width:600px){.bars{gap:1px}.bars i{min-width:1px}}
+/* Demo request */
+.demo-wrap{position:relative;z-index:2;padding:130px 20px 72px}
+.demo-in{max-width:560px;margin:0 auto;text-align:center}
+.demo-in h1{font-family:var(--serif);font-weight:400;font-size:clamp(38px,5vw,56px);line-height:1.05;letter-spacing:-.025em;margin:0 0 12px}
+.demo-in h1 em{font-style:normal;color:var(--accent)}
+.demo-in .lede{color:var(--ink2);font-size:17px;margin:0 auto 28px}
+.demo-in .fcard{text-align:left}
+.hp{position:absolute;left:-10000px;top:auto;width:1px;height:1px;overflow:hidden}
+.demo-status{grid-column:1/-1;margin:0;font-size:14px;color:var(--ink2);min-height:1.4em}
+.demo-status[role=alert]{color:var(--danger);font-weight:600}
