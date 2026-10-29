@@ -19,7 +19,7 @@
   // Public settings. Secrets (TURNSTILE_SECRET_KEY, SMTP_USERNAME, SMTP_TOKEN) are never
   // written here: see README.md. Variables are not inherited by "env.dev".
   "vars": {
-    "TURNSTILE_SITE_KEY": "",
+    "TURNSTILE_SITE_KEY": "0x4AAAAAAFrTwI2L2K6mOd4c",
     "DEMO_RECIPIENT": "demo@synapse-medical.fr",
     "DEMO_SENDER": "demo@synapse-medical.fr",
     "DEMO_SEND": "smtp"
@@ -30,7 +30,7 @@
   "env": {
     "dev": {
       "vars": {
-        "TURNSTILE_SITE_KEY": "",
+        "TURNSTILE_SITE_KEY": "0x4AAAAAAFrTwI2L2K6mOd4c",
         "DEMO_RECIPIENT": "demo@synapse-medical.fr",
         "DEMO_SENDER": "demo@synapse-medical.fr",
         // No real e-mail from dev-www until the Proton settings are checked.
