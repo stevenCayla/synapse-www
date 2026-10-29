@@ -1,0 +1,16 @@
+name: Improvement
+description: Propose a change to the website
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Need
+      description: The problem to solve, and for whom
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Proposal
+      description: What you suggest, with a link to the mockup if any
